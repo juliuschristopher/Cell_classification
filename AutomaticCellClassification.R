@@ -74,6 +74,8 @@ convertHumanGeneList <- function(x){
 ##Colour panels##
 col_con <- c('#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', '#ffffff', '#000000')
 
+col_con2 <- createPalette(50,  c("#ff0000", "#00ff00", "#0000ff"))
+col_con2 <-as.character(col_con2)
 
 ## ##Loading data test#####
 All_cells <- LoadH5Seurat("CITE-Seq2_all_cells.h5seurat")
