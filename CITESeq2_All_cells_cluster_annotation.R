@@ -53,7 +53,6 @@ ggsave("Original_cluster_1.pdf", width = 30, height = 20, units = "cm")
 ####Using canonical markers####
 ##B cells##
 DefaultAssay(All_cells) <- "ADT"
-
 Cd19 <- FeaturePlot(All_cells, features = "Cd19", reduction = "wnn.umap", cols = magma(10), pt.size = 1) +
   theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD19 cell surface expression") +
   theme(plot.title = element_text(color="black", size=16, face="bold"))
@@ -83,6 +82,219 @@ Vln_Cd19_rna <- VlnPlot(All_cells, features = "Cd19", cols = col_con2) +
 print(Vln_Cd19_rna)
 ggsave("Vln_Cd19_rna.pdf", width = 30, height = 20, units = "cm")
 B_cell_clus_rna <- c("0", "1", "2", "10", "15", "18", "19", "20", "21", "23", "27", "28", "30", "35")
+
+##CD4+ cells##
+DefaultAssay(All_cells) <- "ADT"
+Cd4 <- FeaturePlot(All_cells, features = "Cd4", reduction = "wnn.umap", cols = magma(10), pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD4 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Cd4)
+ggsave("Cd4_ab.pdf", width = 30, height = 20, units = "cm")
+
+
+DefaultAssay(All_cells) <- "RNA"
+Cd4_rna <- FeaturePlot(All_cells, features = "Cd4", reduction = "wnn.umap", cols = mako(10), pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD4 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Cd4_rna)
+ggsave("Cd4_rna.pdf", width = 30, height = 20, units = "cm")
+
+DefaultAssay(All_cells) <- "ADT"
+Vln_Cd4 <- VlnPlot(All_cells, features = "Cd4", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD4 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_Cd4)
+ggsave("Vln_Cd4.pdf", width = 30, height = 20, units = "cm")
+CD4_cell_clus_adt <- c("4", "5", "6", "7", "17", "26", "27", "29", "33")
+
+DefaultAssay(All_cells) <- "RNA"
+Vln_Cd4_rna <- VlnPlot(All_cells, features = "Cd4", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD4 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_Cd4_rna)
+ggsave("Vln_Cd4_rna.pdf", width = 30, height = 20, units = "cm")
+CD4_cell_clus_rna <- c("4", "5", "6", "7", "17", "27", "33")
+
+##CD8+ cells##
+DefaultAssay(All_cells) <- "ADT"
+Cd8a <- FeaturePlot(All_cells, features = "Cd8a", reduction = "wnn.umap", cols = magma(10), pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD8 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Cd8a)
+ggsave("Cd8a_ab.pdf", width = 30, height = 20, units = "cm")
+
+
+DefaultAssay(All_cells) <- "RNA"
+Cd8a_rna <- FeaturePlot(All_cells, features = "Cd8a", reduction = "wnn.umap", cols = mako(10), pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD8 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Cd8a_rna)
+ggsave("Cd8a_rna.pdf", width = 30, height = 20, units = "cm")
+
+DefaultAssay(All_cells) <- "ADT"
+Vln_Cd8a <- VlnPlot(All_cells, features = "Cd8a", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD8 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_Cd8a)
+ggsave("Vln_Cd8a.pdf", width = 30, height = 20, units = "cm")
+CD8_cell_clus_adt <- c("4", "5", "9", "22", "28", "29")
+
+DefaultAssay(All_cells) <- "RNA"
+Vln_Cd8a_rna <- VlnPlot(All_cells, features = "Cd8a", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD8 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_Cd8a_rna)
+ggsave("Vln_Cd8_rna.pdf", width = 30, height = 20, units = "cm")
+CD8_cell_clus_rna <- c("4", "5", "9", "22", "28", "29", "33")
+
+##CD3+ expression to identify "true" T cells##
+DefaultAssay(All_cells) <- "RNA"
+Cd3d_rna <- FeaturePlot(All_cells, features = "Cd3d", reduction = "wnn.umap", cols = mako(10), pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD3d mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Cd3d_rna)
+ggsave("Cd3d_rna.pdf", width = 30, height = 20, units = "cm")
+
+DefaultAssay(All_cells) <- "RNA"
+Vln_Cd3d_rna <- VlnPlot(All_cells, features = "Cd3d", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD3d mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_Cd3d_rna)
+ggsave("Vln_Cd3d_rna.pdf", width = 30, height = 20, units = "cm")
+CD3d_cell_clus_rna <- c("3", "4", "5", "6", "7", "9", "26", "27", "28", "29")
+
+DefaultAssay(All_cells) <- "RNA"
+Cd3e_rna <- FeaturePlot(All_cells, features = "Cd3e", reduction = "wnn.umap", cols = mako(10), pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD3e mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Cd3e_rna)
+ggsave("Cd3e_rna.pdf", width = 30, height = 20, units = "cm")
+
+DefaultAssay(All_cells) <- "RNA"
+Vln_Cd3e_rna <- VlnPlot(All_cells, features = "Cd3e", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD3e mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_Cd3e_rna)
+ggsave("Vln_Cd3e_rna.pdf", width = 30, height = 20, units = "cm")
+CD3e_cell_clus_rna <- c("3", "4", "5", "6", "7", "9", "26", "27", "28", "29")
+
+##True CD4 and CD8 T cells##
+B_cell <- c("0", "1", "2", "10", "15", "18", "19", "20", "21", "23", "30", "35")
+CD4_Tcell <- c("4", "6", "7", "26")
+CD8_Tcell <- c("3", "9", "29")
+CD4_cell <- c("17")
+CD8_cell <- c("22")
+CD4_CD8_Tcell <- c("5")
+CD4_CD8_cell <-c("33")
+CD4_Tcell_Bcell <-c("27")
+CD4_CD8_Tcell_Bcell <- c("28")
+Other_cells <- c("8", "11", "12", "13", "14", "16", "24", "25", "31", "32", "34")
+
+####B cell characterisation####
+B_cell_gr <- WhichCells(All_cells, idents = B_cell)
+B_cell_gr_plot <- DimPlot(All_cells, reduction = "wnn.umap",
+        label = TRUE, cells.highlight = B_cell_gr, cols.highlight = "steelblue3"  ,cols = "grey") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B cells") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+print(B_cell_gr_plot)
+ggsave("B_cell_gr_plot.pdf", width = 30, height = 20, units = "cm")
+
+####CD4 T cell characterisation####
+CD4_Tcell_gr <- WhichCells(All_cells, idents = CD4_Tcell)
+CD4_Tcell_gr_plot <- DimPlot(All_cells, reduction = "wnn.umap",
+                          label = TRUE, cells.highlight = CD4_Tcell_gr, cols.highlight = "indianred2"  ,cols = "grey") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD4+ T cells") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  scale_color_manual(labels = c("Other cells", "CD4+ T cells"), values = c("grey", "indianred2"))
+print(CD4_Tcell_gr_plot)
+ggsave("CD4_Tcell_gr_plot.pdf", width = 30, height = 20, units = "cm")
+
+
+####CD8 T cell characterisation####
+CD8_Tcell_gr <- WhichCells(All_cells, idents = CD8_Tcell)
+CD8_Tcell_gr_plot <- DimPlot(All_cells, reduction = "wnn.umap",
+                             label = TRUE, cells.highlight = CD8_Tcell_gr, cols.highlight = "turquoise4"  ,cols = "grey") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD8+ T cells") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  scale_color_manual(labels = c("Other cells", "CD8+ T cells"), values = c("grey", "turquoise4"))
+print(CD8_Tcell_gr_plot)
+ggsave("CD8_Tcell_gr_plot.pdf", width = 30, height = 20, units = "cm")
+
+####CD4 cell characterisation####
+CD4_cell_gr <- WhichCells(All_cells, idents = CD4_cell)
+CD4_cell_gr_plot <- DimPlot(All_cells, reduction = "wnn.umap",
+                             label = TRUE, cells.highlight = CD4_cell_gr, cols.highlight = "mediumorchid2"  ,cols = "grey") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD4+ cells") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  scale_color_manual(labels = c("Other cells", "CD4+ cells"), values = c("grey", "mediumorchid2"))
+print(CD4_cell_gr_plot)
+ggsave("CD4_cell_gr_plot.pdf", width = 30, height = 20, units = "cm")
+
+####CD8 cell characterisation####
+CD8_cell_gr <- WhichCells(All_cells, idents = CD8_cell)
+CD8_cell_gr_plot <- DimPlot(All_cells, reduction = "wnn.umap",
+                            label = TRUE, cells.highlight = CD8_cell_gr, cols.highlight = "seagreen3"  ,cols = "grey") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD8+ cells") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  scale_color_manual(labels = c("Other cells", "CD8+ cells"), values = c("grey", "seagreen3"))
+print(CD8_cell_gr_plot)
+ggsave("CD8_cell_gr_plot.pdf", width = 30, height = 20, units = "cm")
+
+####CD4 T and CD8 T cell characterisation####
+CD4_CD8_Tcell_gr <- WhichCells(All_cells, idents = CD4_CD8_Tcell)
+CD4_CD8_Tcell_gr_plot <- DimPlot(All_cells, reduction = "wnn.umap",
+                            label = TRUE, cells.highlight = CD4_CD8_Tcell_gr, cols.highlight = "peachpuff2"  ,cols = "grey") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD4+ and CD8+ T cells") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  scale_color_manual(labels = c("Other cells", " CD4+ and CD8+ T cells"), values = c("grey", "peachpuff2"))
+print(CD4_CD8_Tcell_gr_plot)
+ggsave("CD4_CD8_Tcell_gr_plot.pdf", width = 30, height = 20, units = "cm")
+
+####CD4 and CD8 cell characterisation####
+CD4_CD8_cell_gr <- WhichCells(All_cells, idents = CD4_CD8_cell)
+CD4_CD8_cell_gr_plot <- DimPlot(All_cells, reduction = "wnn.umap",
+                                 label = TRUE, cells.highlight = CD4_CD8_cell_gr, cols.highlight = "orangered3"  ,cols = "grey") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD4+ and CD8+ cells") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  scale_color_manual(labels = c("Other cells", " CD4+ and CD8+ cells"), values = c("grey", "orangered3"))
+print(CD4_CD8_cell_gr_plot)
+ggsave("CD4_CD8_cell_gr_plot.pdf", width = 30, height = 20, units = "cm")
+
+####CD4 T and B cell characterisation####
+CD4_Tcell_Bcell_gr <- WhichCells(All_cells, idents = CD4_Tcell_Bcell)
+CD4_Tcell_Bcell_gr_plot <- DimPlot(All_cells, reduction = "wnn.umap",
+                                label = TRUE, cells.highlight = CD4_Tcell_Bcell_gr, cols.highlight = "lightcoral"  ,cols = "grey") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD4+ T and B cells") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  scale_color_manual(labels = c("Other cells", " CD4+ T and B cells"), values = c("grey", "lightcoral"))
+print(CD4_Tcell_Bcell_gr_plot)
+ggsave("CD4_Tcell_Bcell_gr_plot.pdf", width = 30, height = 20, units = "cm")
+
+
+####CD4 T, CD8 T and B cell characterisation####
+CD4_CD8_Tcell_Bcell_gr <- WhichCells(All_cells, idents = CD4_CD8_Tcell_Bcell)
+CD4_CD8_Tcell_Bcell_gr_plot <- DimPlot(All_cells, reduction = "wnn.umap",
+                                   label = TRUE, cells.highlight = CD4_CD8_Tcell_Bcell_gr, cols.highlight = "olivedrab3"  ,cols = "grey") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD4+ T, CD8+ T and B cells") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  scale_color_manual(labels = c("Other cells", " CD4+ T, CD8+ T and B cells"), values = c("grey", "olivedrab3"))
+print(CD4_CD8_Tcell_Bcell_gr_plot)
+ggsave("CD4_CD8_Tcell_Bcell_gr_plot.pdf", width = 30, height = 20, units = "cm")
+
+
+####All cells highlighted####
+all_cells_gr <- c(B_cell_gr, CD4_Tcell_gr, CD8_Tcell_gr, CD4_cell_gr, CD8_cell_gr, CD4_CD8_Tcell_gr,CD4_CD8_cell_gr, CD4_Tcell_Bcell_gr, CD4_CD8_Tcell_Bcell_gr)
+all_cells_cols <- c("steelblue3", "indianred2", "turquoise4", "mediumorchid2", "seagreen3", "peachpuff2", "orangered3", "lightcoral", "olivedrab3")
+all_cells_cols_2 <- c("grey", "steelblue3", "indianred2", "turquoise4", "mediumorchid2", "seagreen3", "peachpuff2", "orangered3", "lightcoral", "olivedrab3")
+all_cells_labels <- c("Other cells", " CD4+ T cells, CD8+ T cells, CD4+ cells, CD8+ cells, CD4+ T and CD8+ T cells, CD4+ cells and CD8+ cell, CD4+ T cells sand B cells", "CD4+, CD8+ T cells and B cells")
+
+
+all_cells_gr_plot <- DimPlot(All_cells, reduction = "wnn.umap",
+  label = TRUE, cells.highlight = all_cells_gr, cols.highlight = all_cells_cols ,cols = "grey") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("All cells") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(all_cells_gr_plot)
+ggsave("all_cells_gr_plot.pdf", width = 30, height = 20, units = "cm")
 
 
 
