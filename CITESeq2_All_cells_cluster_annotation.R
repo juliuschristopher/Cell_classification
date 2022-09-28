@@ -194,6 +194,7 @@ Other_cells <- c("8", "11", "12", "13", "14", "16", "24", "25", "31", "32", "34"
 setwd("/Volumes/GoogleDrive/Shared drives/Okkengroup/Experiments/Julius/Experiments/CITE-Sequencing/CITE-Seq (2)/Overall_analysis/CITE-Seq2_all_cells/Cell_classification/Bcells")
 
 B_cell_gr <- WhichCells(All_cells, idents = B_cell)
+
 B_cell_gr_plot <- DimPlot(All_cells, reduction = "wnn.umap",
         label = TRUE, cells.highlight = B_cell_gr, cols.highlight = "steelblue3"  ,cols = "grey") +
   theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B cells") +
@@ -203,6 +204,10 @@ ggsave("B_cell_gr_plot.pdf", width = 30, height = 20, units = "cm")
 
 ##Make a UMAP plot with only B cell clusters##
 Bcell_clus <- subset(All_cells, idents = B_cell)
+
+my_levels2 <- c("0", "1", "2", "10", "15", "18", "19", "20", "21", "23", "30", "35")
+Idents(Bcell_clus) <- factor(Idents(Bcell_clus), levels = my_levels2)
+
 Bcell_clus_plot <- DimPlot(Bcell_clus, reduction = "wnn.umap", cols = col_con2) +
   theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B cells") +
   theme(plot.title = element_text(color="black", size=16, face="bold"))
@@ -260,6 +265,18 @@ CD95 <- FeaturePlot(Bcell_clus, features = "Cd95", reduction = "wnn.umap", cols 
 print(CD95)
 ggsave("CD95_ab.pdf", width = 30, height = 20, units = "cm")
 
+CTLA4 <- FeaturePlot(Bcell_clus, features = "Ctla4", reduction = "wnn.umap", cols = magma(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CTLA4 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CTLA4)
+ggsave("CTLA4_ab.pdf", width = 30, height = 20, units = "cm")
+
+PD_1 <- FeaturePlot(Bcell_clus, features = "Pd-1", reduction = "wnn.umap", cols = magma(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("Pd-1 (FAS) cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(PD_1)
+ggsave("PD_1_ab.pdf", width = 30, height = 20, units = "cm")
+
 
 #RNA UMAP
 DefaultAssay(Bcell_clus) <- "RNA"
@@ -304,6 +321,18 @@ CD95_rna <- FeaturePlot(Bcell_clus, features = "Fas", reduction = "wnn.umap", co
   theme(plot.title = element_text(color="black", size=16, face="bold"))
 print(CD95_rna)
 ggsave("CD95_rna.pdf", width = 30, height = 20, units = "cm")
+
+CTLA4_rna <- FeaturePlot(Bcell_clus, features = "Ctla4", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CTLA4 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CTLA4_rna)
+ggsave("CTLA4_rna.pdf", width = 30, height = 20, units = "cm")
+
+PD_1_rna <- FeaturePlot(Bcell_clus, features = "Pdcd1", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("PD-1 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(PD_1_rna)
+ggsave("PD_1_rna.pdf", width = 30, height = 20, units = "cm")
 
 
 #ADT VlnPlot
@@ -368,6 +397,18 @@ ggsave("Vln_CD95.pdf", width = 30, height = 20, units = "cm")
 
 GC_Bcells <- c("23")
 
+Vln_CTLA4 <- VlnPlot(Bcell_clus, features = "Ctla4", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CTLA4 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CTLA4)
+ggsave("Vln_CTLA4.pdf", width = 30, height = 20, units = "cm")
+
+Vln_PD_1 <- VlnPlot(Bcell_clus, features = "Pd-1", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("PD-1 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_PD_1)
+ggsave("Vln_PD_1.pdf", width = 30, height = 20, units = "cm")
+
 #RNA VlnPlot
 DefaultAssay(Bcell_clus) <- "RNA"
 Vln_CD93_rna <- VlnPlot(Bcell_clus, features = "Cd93", cols = col_con2) +
@@ -411,6 +452,31 @@ Vln_CD95_rna <- VlnPlot(Bcell_clus, features = "Fas", cols = col_con2) +
   theme(plot.title = element_text(color="black", size=16, face="bold"))
 print(Vln_CD95_rna)
 ggsave("Vln_CD95_rna.pdf", width = 30, height = 20, units = "cm")
+
+Vln_CTLA4_rna <- VlnPlot(Bcell_clus, features = "Ctla4", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CTLA4 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CTLA4_rna)
+ggsave("Vln_CTLA4_rna.pdf", width = 30, height = 20, units = "cm")
+
+CTLA4hi_Bcells <- c("2", "18")
+
+Vln_PD_1_rna <- VlnPlot(Bcell_clus, features = "Pdcd1", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("PD-1 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_PD_1_rna)
+ggsave("Vln_PD_1_rna.pdf", width = 30, height = 20, units = "cm")
+
+#ADT dotplot
+DefaultAssay(Bcell_clus) <- "ADT"
+Abs_Bcells <- c("Cxcr5", "Cd86", "Cd80", "Cd83", "Pd-L1", "Pd-L2", "Pd-1", "Ctla4", "Cd40", "Cd44")
+
+DotPlot(Bcell_clus, features = Abs_Bcells, cluster.idents = FALSE) + RotatedAxis() +
+  scale_colour_gradient2(low = "#000004FF", mid = "#CD4071FF", high = "#FCFDBFFF")
+?DotPlot
+
+
+
 
 
 ####CD4 T cell characterisation####
