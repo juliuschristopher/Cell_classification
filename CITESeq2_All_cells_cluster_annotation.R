@@ -191,13 +191,227 @@ CD4_CD8_Tcell_Bcell <- c("28")
 Other_cells <- c("8", "11", "12", "13", "14", "16", "24", "25", "31", "32", "34")
 
 ####B cell characterisation####
+setwd("/Volumes/GoogleDrive/Shared drives/Okkengroup/Experiments/Julius/Experiments/CITE-Sequencing/CITE-Seq (2)/Overall_analysis/CITE-Seq2_all_cells/Cell_classification/Bcells")
+
 B_cell_gr <- WhichCells(All_cells, idents = B_cell)
 B_cell_gr_plot <- DimPlot(All_cells, reduction = "wnn.umap",
         label = TRUE, cells.highlight = B_cell_gr, cols.highlight = "steelblue3"  ,cols = "grey") +
   theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B cells") +
-  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
 print(B_cell_gr_plot)
 ggsave("B_cell_gr_plot.pdf", width = 30, height = 20, units = "cm")
+
+##Make a UMAP plot with only B cell clusters##
+Bcell_clus <- subset(All_cells, idents = B_cell)
+Bcell_clus_plot <- DimPlot(Bcell_clus, reduction = "wnn.umap", cols = col_con2) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B cells") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Bcell_clus_plot)
+ggsave("Bcell_clus_plot.pdf", width = 30, height = 20, units = "cm")
+
+##Define by common B cell markers##
+#ADT UMAP
+DefaultAssay(Bcell_clus) <- "ADT"
+B220 <- FeaturePlot(Bcell_clus, features = "B220", reduction = "wnn.umap", cols = magma(10), pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B220 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(B220)
+ggsave("B220_ab.pdf", width = 30, height = 20, units = "cm")
+
+CD93 <- FeaturePlot(Bcell_clus, features = "Cd93", reduction = "wnn.umap", cols = magma(10), pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD93 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD93)
+ggsave("CD93_ab.pdf", width = 30, height = 20, units = "cm")
+
+CD21 <- FeaturePlot(Bcell_clus, features = "Cd21", reduction = "wnn.umap", cols = magma(10), pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD21 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD21)
+ggsave("CD21_ab.pdf", width = 30, height = 20, units = "cm")
+
+CD23 <- FeaturePlot(Bcell_clus, features = "Cd23", reduction = "wnn.umap", cols = magma(10), pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD23 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD23)
+ggsave("CD23_ab.pdf", width = 30, height = 20, units = "cm")
+
+IgM <- FeaturePlot(Bcell_clus, features = "Igm", reduction = "wnn.umap", cols = magma(10), pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("IgM cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(IgM)
+ggsave("IgM_ab.pdf", width = 30, height = 20, units = "cm")
+
+IgD <- FeaturePlot(Bcell_clus, features = "Igd", reduction = "wnn.umap", cols = magma(10), pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("IgD cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(IgD)
+ggsave("IgD_ab.pdf", width = 30, height = 20, units = "cm")
+
+CD38 <- FeaturePlot(Bcell_clus, features = "Cd38", reduction = "wnn.umap", cols = magma(10), pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD38 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD38)
+ggsave("CD38_ab.pdf", width = 30, height = 20, units = "cm")
+
+CD95 <- FeaturePlot(Bcell_clus, features = "Cd95", reduction = "wnn.umap", cols = magma(10), pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD95 (FAS) cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD95)
+ggsave("CD95_ab.pdf", width = 30, height = 20, units = "cm")
+
+
+#RNA UMAP
+DefaultAssay(Bcell_clus) <- "RNA"
+CD93_rna <- FeaturePlot(Bcell_clus, features = "Cd93", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD93 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD93_rna)
+ggsave("CD93_rna.pdf", width = 30, height = 20, units = "cm")
+
+CD21_rna <- FeaturePlot(Bcell_clus, features = "Cr2", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD21 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD21_rna)
+ggsave("CD21_rna.pdf", width = 30, height = 20, units = "cm")
+
+CD23_rna <- FeaturePlot(Bcell_clus, features = "Fcer2a", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD23 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD23_rna)
+ggsave("CD23_rna.pdf", width = 30, height = 20, units = "cm")
+
+IgM_rna <- FeaturePlot(Bcell_clus, features = "Ighm", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("IgM mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(IgM_rna)
+ggsave("IgM_rna.pdf", width = 30, height = 20, units = "cm")
+
+IgD_rna <- FeaturePlot(Bcell_clus, features = "Ighd", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("IgD mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(IgD_rna)
+ggsave("IgD_rna.pdf", width = 30, height = 20, units = "cm")
+
+CD38_rna <- FeaturePlot(Bcell_clus, features = "Cd38", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD38 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD38_rna)
+ggsave("CD38_rna.pdf", width = 30, height = 20, units = "cm")
+
+CD95_rna <- FeaturePlot(Bcell_clus, features = "Fas", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD95 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD95_rna)
+ggsave("CD95_rna.pdf", width = 30, height = 20, units = "cm")
+
+
+#ADT VlnPlot
+DefaultAssay(Bcell_clus) <- "ADT"
+Vln_B220 <- VlnPlot(Bcell_clus, features = "B220", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("B220 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_B220)
+ggsave("Vln_B220.pdf", width = 30, height = 20, units = "cm")
+
+Vln_CD93 <- VlnPlot(Bcell_clus, features = "Cd93", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD93 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD93)
+ggsave("Vln_CD93.pdf", width = 30, height = 20, units = "cm")
+
+Transitional_Bcells <- c("15", "30")
+
+Vln_CD21 <- VlnPlot(Bcell_clus, features = "Cd21", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD21 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD21)
+ggsave("Vln_CD21.pdf", width = 30, height = 20, units = "cm")
+
+MarginalZone_Bcells <- c("1", "20")
+
+Vln_CD23 <- VlnPlot(Bcell_clus, features = "Cd23", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD23 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD23)
+ggsave("Vln_CD23.pdf", width = 30, height = 20, units = "cm")
+
+Follicular_Bcells <- c("0", "18", "19", "21", "35")
+
+Vln_IgM <- VlnPlot(Bcell_clus, features = "Igm", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("IgM cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_IgM)
+ggsave("Vln_IgM.pdf", width = 30, height = 20, units = "cm")
+
+IgMhi_Bcells <- c("0", "1", "15", "20")
+
+Vln_IgD <- VlnPlot(Bcell_clus, features = "Igd", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("IgD cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_IgD)
+ggsave("Vln_IgD.pdf", width = 30, height = 20, units = "cm")
+
+IgDhi_Bcells <- c("0", "1", "15", "18", "19", "21", "35")
+
+Vln_CD38 <- VlnPlot(Bcell_clus, features = "Cd38", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD38 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD38)
+ggsave("Vln_CD38.pdf", width = 30, height = 20, units = "cm")
+
+Vln_CD95 <- VlnPlot(Bcell_clus, features = "Cd95", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD95 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD95)
+ggsave("Vln_CD95.pdf", width = 30, height = 20, units = "cm")
+
+GC_Bcells <- c("23")
+
+#RNA VlnPlot
+DefaultAssay(Bcell_clus) <- "RNA"
+Vln_CD93_rna <- VlnPlot(Bcell_clus, features = "Cd93", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD93 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD93_rna)
+ggsave("Vln_CD93_rna.pdf", width = 30, height = 20, units = "cm")
+
+Vln_CD21_rna <- VlnPlot(Bcell_clus, features = "Cr2", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD21 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD21_rna)
+ggsave("Vln_CD21_rna.pdf", width = 30, height = 20, units = "cm")
+
+Vln_CD23_rna <- VlnPlot(Bcell_clus, features = "Fcer2a", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD23 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD23_rna)
+ggsave("Vln_CD23_rna.pdf", width = 30, height = 20, units = "cm")
+
+Vln_IgM_rna <- VlnPlot(Bcell_clus, features = "Ighm", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("IgM mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_IgM_rna)
+ggsave("Vln_IgM_rna.pdf", width = 30, height = 20, units = "cm")
+
+Vln_IgD_rna <- VlnPlot(Bcell_clus, features = "Ighd", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("IgD mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_IgD_rna)
+ggsave("Vln_IgD_rna.pdf", width = 30, height = 20, units = "cm")
+
+Vln_CD38_rna <- VlnPlot(Bcell_clus, features = "Cd38", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD38 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD38_rna)
+ggsave("Vln_CD38_rna.pdf", width = 30, height = 20, units = "cm")
+
+Vln_CD95_rna <- VlnPlot(Bcell_clus, features = "Fas", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD95 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD95_rna)
+ggsave("Vln_CD95_rna.pdf", width = 30, height = 20, units = "cm")
+
 
 ####CD4 T cell characterisation####
 CD4_Tcell_gr <- WhichCells(All_cells, idents = CD4_Tcell)
@@ -219,6 +433,7 @@ CD8_Tcell_gr_plot <- DimPlot(All_cells, reduction = "wnn.umap",
   scale_color_manual(labels = c("Other cells", "CD8+ T cells"), values = c("grey", "turquoise4"))
 print(CD8_Tcell_gr_plot)
 ggsave("CD8_Tcell_gr_plot.pdf", width = 30, height = 20, units = "cm")
+
 
 ####CD4 cell characterisation####
 CD4_cell_gr <- WhichCells(All_cells, idents = CD4_cell)
@@ -293,8 +508,16 @@ all_cells_gr_plot <- DimPlot(All_cells, reduction = "wnn.umap",
   label = TRUE, cells.highlight = all_cells_gr, cols.highlight = all_cells_cols ,cols = "grey") +
   theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("All cells") +
   theme(plot.title = element_text(color="black", size=16, face="bold"))
+
+
+
+
+
 print(all_cells_gr_plot)
 ggsave("all_cells_gr_plot.pdf", width = 30, height = 20, units = "cm")
+
+
+
 
 
 
