@@ -488,7 +488,6 @@ ggsave("Vln_CD80.pdf", width = 30, height = 20, units = "cm")
 
 Memory_Bcells <- c("2", "10", "23")
 
-
 Vln_CD83 <- VlnPlot(Bcell_clus, features = "Cd83", cols = col_con2) +
   theme_bw() + NoLegend() + ggtitle("CD83 cell surface expression") +
   theme(plot.title = element_text(color="black", size=16, face="bold"))
@@ -501,6 +500,7 @@ Vln_CD86 <- VlnPlot(Bcell_clus, features = "Cd86", cols = col_con2) +
 print(Vln_CD86)
 ggsave("Vln_CD86.pdf", width = 30, height = 20, units = "cm")
 
+CD86hi_Bcells <- c("2", "23")
 
 #RNA VlnPlot
 DefaultAssay(Bcell_clus) <- "RNA"
@@ -589,6 +589,47 @@ Vln_CD86_rna <- VlnPlot(Bcell_clus, features = "Cd86", cols = col_con2) +
   theme(plot.title = element_text(color="black", size=16, face="bold"))
 print(Vln_CD86_rna)
 ggsave("Vln_CD86_rna.pdf", width = 30, height = 20, units = "cm")
+
+##Summary B cell canonical markers##
+
+Transitional_Bcells <- c("15", "30")
+MarginalZone_Bcells <- c("1", "20")
+Follicular_Bcells <- c("0", "18", "19", "21", "35")
+IgMhi_Bcells <- c("0", "1", "15", "20")
+IgDhi_Bcells <- c("0", "1", "15", "18", "19", "21", "35")
+CTLA4hi_Bcells <- c("2", "18")
+GC_Bcells <- c("23")
+Memory_Bcells <- c("2", "10", "23")
+CD86hi_Bcells <- c("2", "23")
+
+#Change Idents on Bcell_clus#
+Idents(Bcell_clus)
+Bcell_clus <- RenameIdents(Bcell_clus, `0` = "IgM+ IgD+ Follicular B cells", `1` ="IgM+ IgD+ Marginal Zone B cells",
+                           `2` = "CTLA4+ CD86+ Memory B cells", `10` = "Memory B cells", `15` = "IgM+ IgD+ Transitional B cells",
+                           `18` = "IgD+ CTLA4+ Follicular B cells", `19` = "IgD+ Follicular B cells (1)", `20` = "IgM+ Marginal Zone B cells",
+                           `21` = "IgD+ Follicular B cells (2)", `23` = "Germinal Centre B cells/CD86+ Memory B cells", `30` = "Transitonal B cells",
+                           `35` = "IgD+ Follicular B cells (3)")
+Bcell_clus[["Type_assigned"]] <- Idents(Bcell_clus)
+Idents(Bcell_clus)
+
+UMAP2 <- DimPlot(Bcell_clus, reduction = "wnn.umap", cols = col_con2, pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B cell Clusters CITE-Seq-2") +
+  theme(plot.title = element_text(size=16, face = "bold"))
+print(UMAP2)
+ggsave("Bcellsl_cluster_1.pdf", width = 30, height = 20, units = "cm")
+
+UMAP3 <- DimPlot(Bcell_clus, reduction = "wnn.umap", cols = col_con2, pt.size = 1, label = TRUE, repel = TRUE, label.box = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B cell Clusters CITE-Seq-2") +
+  theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
+print(UMAP3)
+ggsave("Bcellsl_cluster_2.pdf", width = 30, height = 20, units = "cm")
+
+##use addmoduel score to test for cell signature enrichment##
+
+
+##Use scGate to gate out popualtions##
+
+
 
 
 #ADT dotplot
