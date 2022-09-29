@@ -277,6 +277,36 @@ PD_1 <- FeaturePlot(Bcell_clus, features = "Pd-1", reduction = "wnn.umap", cols 
 print(PD_1)
 ggsave("PD_1_ab.pdf", width = 30, height = 20, units = "cm")
 
+PD_L1 <- FeaturePlot(Bcell_clus, features = "Pd-L1", reduction = "wnn.umap", cols = magma(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("PD-L1 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(PD_L1)
+ggsave("PD_L1_ab.pdf", width = 30, height = 20, units = "cm")
+
+PD_L2 <- FeaturePlot(Bcell_clus, features = "Pd-L2", reduction = "wnn.umap", cols = magma(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("PD-L1 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(PD_L2)
+ggsave("PD_L2_ab.pdf", width = 30, height = 20, units = "cm")
+
+CD80 <- FeaturePlot(Bcell_clus, features = "Cd80", reduction = "wnn.umap", cols = magma(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD80 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD80)
+ggsave("CD80_ab.pdf", width = 30, height = 20, units = "cm")
+
+CD83 <- FeaturePlot(Bcell_clus, features = "Cd83", reduction = "wnn.umap", cols = magma(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD83 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD83)
+ggsave("CD83_ab.pdf", width = 30, height = 20, units = "cm")
+
+CD86 <- FeaturePlot(Bcell_clus, features = "Cd86", reduction = "wnn.umap", cols = magma(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD86 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD86)
+ggsave("CD86_ab.pdf", width = 30, height = 20, units = "cm")
+
 
 #RNA UMAP
 DefaultAssay(Bcell_clus) <- "RNA"
@@ -334,6 +364,35 @@ PD_1_rna <- FeaturePlot(Bcell_clus, features = "Pdcd1", reduction = "wnn.umap", 
 print(PD_1_rna)
 ggsave("PD_1_rna.pdf", width = 30, height = 20, units = "cm")
 
+PD_L1_rna <- FeaturePlot(Bcell_clus, features = "Cd274", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("PD-L1 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(PD_L1_rna)
+ggsave("PD_L1_rna.pdf", width = 30, height = 20, units = "cm")
+
+PD_L2_rna <- FeaturePlot(Bcell_clus, features = "Pdcd1lg2", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("PD-L2 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(PD_L2_rna)
+ggsave("PD_L2_rna.pdf", width = 30, height = 20, units = "cm")
+
+CD80_rna <- FeaturePlot(Bcell_clus, features = "Cd80", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD80 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD80_rna)
+ggsave("CD80_rna.pdf", width = 30, height = 20, units = "cm")
+
+CD83_rna <- FeaturePlot(Bcell_clus, features = "Cd83", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD83 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD83_rna)
+ggsave("CD83_rna.pdf", width = 30, height = 20, units = "cm")
+
+CD86_rna <- FeaturePlot(Bcell_clus, features = "Cd86", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD86 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD86_rna)
+ggsave("CD86_rna.pdf", width = 30, height = 20, units = "cm")
 
 #ADT VlnPlot
 DefaultAssay(Bcell_clus) <- "ADT"
@@ -409,6 +468,40 @@ Vln_PD_1 <- VlnPlot(Bcell_clus, features = "Pd-1", cols = col_con2) +
 print(Vln_PD_1)
 ggsave("Vln_PD_1.pdf", width = 30, height = 20, units = "cm")
 
+Vln_PD_L1 <- VlnPlot(Bcell_clus, features = "Pd-L1", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("PD-L1 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_PD_L1)
+ggsave("Vln_PD_L1.pdf", width = 30, height = 20, units = "cm")
+
+Vln_PD_L2 <- VlnPlot(Bcell_clus, features = "Pd-L2", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("PD-L2 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_PD_L2)
+ggsave("Vln_PD_L2.pdf", width = 30, height = 20, units = "cm")
+
+Vln_CD80 <- VlnPlot(Bcell_clus, features = "Cd80", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD80 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD80)
+ggsave("Vln_CD80.pdf", width = 30, height = 20, units = "cm")
+
+Memory_Bcells <- c("2", "10", "23")
+
+
+Vln_CD83 <- VlnPlot(Bcell_clus, features = "Cd83", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD83 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD83)
+ggsave("Vln_CD83.pdf", width = 30, height = 20, units = "cm")
+
+Vln_CD86 <- VlnPlot(Bcell_clus, features = "Cd86", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD86 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD86)
+ggsave("Vln_CD86.pdf", width = 30, height = 20, units = "cm")
+
+
 #RNA VlnPlot
 DefaultAssay(Bcell_clus) <- "RNA"
 Vln_CD93_rna <- VlnPlot(Bcell_clus, features = "Cd93", cols = col_con2) +
@@ -466,6 +559,37 @@ Vln_PD_1_rna <- VlnPlot(Bcell_clus, features = "Pdcd1", cols = col_con2) +
   theme(plot.title = element_text(color="black", size=16, face="bold"))
 print(Vln_PD_1_rna)
 ggsave("Vln_PD_1_rna.pdf", width = 30, height = 20, units = "cm")
+
+Vln_PD_L1_rna <- VlnPlot(Bcell_clus, features = "Cd274", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("PD-L1 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_PD_L1_rna)
+ggsave("Vln_PD_L1_rna.pdf", width = 30, height = 20, units = "cm")
+
+Vln_PD_L2_rna <- VlnPlot(Bcell_clus, features = "Pdcd1lg2", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("PD-L2 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_PD_L2_rna)
+ggsave("Vln_PD_L2_rna.pdf", width = 30, height = 20, units = "cm")
+
+Vln_CD80_rna <- VlnPlot(Bcell_clus, features = "Cd80", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD80 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD80_rna)
+ggsave("Vln_CD80_rna.pdf", width = 30, height = 20, units = "cm")
+
+Vln_CD83_rna <- VlnPlot(Bcell_clus, features = "Cd83", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD83 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD83_rna)
+ggsave("Vln_CD83_rna.pdf", width = 30, height = 20, units = "cm")
+
+Vln_CD86_rna <- VlnPlot(Bcell_clus, features = "Cd86", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD86 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD86_rna)
+ggsave("Vln_CD86_rna.pdf", width = 30, height = 20, units = "cm")
+
 
 #ADT dotplot
 DefaultAssay(Bcell_clus) <- "ADT"
