@@ -943,16 +943,31 @@ comparison_plt_1 <- ggplot(comparison_plt, aes(fill=Comparison, log2fold_change,
 comparison_plt_1
 ggsave("comparison_plt_1.pdf", width = 30, height = 20, units = "cm")
 
-#Comparison heatmaps#
+
 Top6_max <- head(comparison_plt %>%
                    arrange(desc(log2fold_change)))
 
-Top6_max-heatmap <- pheatmap::pheatmap(t(Top6_max), cluster_rows = T, cluster_cols = T,show_rownames = T, show_colnames = T,
-                                            cellwidth = 30, cellheight = 30, angle_col = 45, display_numbers = T)
-
-
 Top6_min <- head(comparison_plt %>%
                    arrange(log2fold_change))
+
+##CTLA4+ CD86+ Memory B cell analysis - Cluster 2##
+Idents(Bcell_clus) <- Bcell_clus$seurat_clusters
+
+Cluster2_ADT <- FindMarkers(Bcell_clus, ident.1 = 2, assay = "ADT")
+Cluster2_ADT <- Cluster2_ADT %>%
+  filter(p_val_adj <= 0.05) %>%
+  arrange(desc(avg_log2FC))
+
+Cluster2_RNA <- FindMarkers(Bcell_clus, ident.1 = 2, assay = "RNA")
+Cluster2_RNA <- Cluster2_RNA %>%
+  filter(p_val_adj <= 0.05) %>%
+  arrange(desc(avg_log2FC))
+
+
+##Re-clustering of Cluster 2##
+
+
+
 
 ##use addmodule score to test for cell signature enrichment##
 
