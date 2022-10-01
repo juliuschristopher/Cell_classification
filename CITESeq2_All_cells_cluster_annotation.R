@@ -30,7 +30,11 @@ library(ggpubr)
 col_con1 <- c('#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', '#ffffff', '#000000')
 col_con2 <- createPalette(50,  c("#ff0000", "#00ff00", "#0000ff"))
 col_con2 <-as.character(col_con2)
-col_con3 <- c("black", "goldenrod2", "blue", "darkgreen")
+col_con3 <- c("black", "goldenrod2", "blue", "darkgreen") #For Genotypes
+col_con4 <- c("grey1", "azure4", "gold1", "chocolate2", "blue", "forestgreen", "darkolivegreen1") #For individual mice
+col_con5 <- c("darkred", "darkturquoise") #For Sex
+col_con6 <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
+
 
 ## ##Loading data test#####
 All_cells <- LoadH5Seurat("CITE-Seq2_all_cells.h5seurat")
@@ -683,11 +687,17 @@ UMAP4 <- DimPlot(Bcell_clus, reduction = "wnn.umap", cols = col_con3, pt.size = 
 print(UMAP4)
 ggsave("Bcellsl_cluster_3.pdf", width = 30, height = 20, units = "cm")
 
-UMAP4 <- DimPlot(Bcell_clus, reduction = "wnn.umap", cols = col_con3, pt.size = 1, label = FALSE, repel = TRUE, group.by = "Genotype") +
-  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B cell Clusters CITE-Seq-2 by Genotype") +
-  theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
-print(UMAP4)
-ggsave("Bcellsl_cluster_3.pdf", width = 30, height = 20, units = "cm")
+UMAP5 <- DimPlot(Bcell_clus, reduction = "wnn.umap", cols = col_con4, pt.size = 1, label = FALSE, repel = TRUE, group.by = "Mouse") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B cell Clusters CITE-Seq-2 by Mouse") +
+  theme(plot.title = element_text(size=16, face = "bold"))
+print(UMAP5)
+ggsave("Bcellsl_cluster_4.pdf", width = 30, height = 20, units = "cm")
+
+UMAP6 <- DimPlot(Bcell_clus, reduction = "wnn.umap", cols = col_con5, pt.size = 1, label = FALSE, group.by = "Sex") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B cell Clusters CITE-Seq-2 by Sex") +
+  theme(plot.title = element_text(size=16, face = "bold"))
+print(UMAP6)
+ggsave("Bcellsl_cluster_5.pdf", width = 30, height = 20, units = "cm")
 
 head(Bcell_clus[[]])
 
@@ -699,12 +709,25 @@ Sample.WT.plot1 <- DimPlot(Sample.WT, label = FALSE ,reduction = "wnn.umap", pt.
 Sample.WT.plot1
 ggsave("Sample.WT.plot1.pdf", width = 30, height = 20, units = "cm")
 
+Sample.WT.plot2 <- DimPlot(Sample.WT, label = FALSE ,reduction = "wnn.umap", pt.size = 3, cols = col_con2, shape.by = "Mouse")  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("WT B cell Clusters") +
+  theme(plot.title = element_text(size=16, face = "bold")) +
+  scale_shape_manual(values=c(1, 2))
+Sample.WT.plot2
+ggsave("Sample.WT.plot2.pdf", width = 30, height = 20, units = "cm")
+
 Sample.BCL6 <- subset(Bcell_clus, subset = Genotype == "BCL6")
 Sample.BCL6.plot1 <- DimPlot(Sample.BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
   theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("BCL6 B cell Clusters") +
   theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
 Sample.BCL6.plot1
-ggsave("Sample.BCL6.plot1.pdf", width = 30, height = 20, units = "cm")
+
+Sample.BCL6.plot2 <- DimPlot(Sample.BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 3, cols = col_con2, shape.by = "Mouse")  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("BCL6 B cell Clusters") +
+  theme(plot.title = element_text(size=16, face = "bold")) +
+  scale_shape_manual(values=c(1, 2))
+Sample.BCL6.plot2
+ggsave("Sample.BCL6.plot2.pdf", width = 30, height = 20, units = "cm")
 
 Sample.E1020K <- subset(Bcell_clus, subset = Genotype == "E1020K")
 Sample.E1020K.plot1 <- DimPlot(Sample.E1020K, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
@@ -713,12 +736,41 @@ Sample.E1020K.plot1 <- DimPlot(Sample.E1020K, label = FALSE ,reduction = "wnn.um
 Sample.E1020K.plot1
 ggsave("Sample.E1020K.plot1.pdf", width = 30, height = 20, units = "cm")
 
+Sample.E1020K.plot2 <- DimPlot(Sample.E1020K, label = FALSE ,reduction = "wnn.umap", pt.size = 3, cols = col_con2, shape.by = "Mouse")  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K B cell Clusters") +
+  theme(plot.title = element_text(size=16, face = "bold")) +
+  scale_shape_manual(values=c(1, 2))
+Sample.E1020K.plot2
+ggsave("Sample.E1020K.plot2.pdf", width = 30, height = 20, units = "cm")
+
 Sample.E1020K_BCL6 <- subset(Bcell_clus, subset = Genotype == "E1020K_BCL6")
 Sample.E1020K_BCL6.plot1 <- DimPlot(Sample.E1020K_BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
   theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K_BCL6 B cell Clusters") +
   theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
 Sample.E1020K_BCL6.plot1
 ggsave("Sample.E1020K_BCL6.plot1.pdf", width = 30, height = 20, units = "cm")
+
+Sample.E1020K_BCL6.plot2 <- DimPlot(Sample.E1020K_BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 3, cols = col_con2, shape.by = "Mouse")  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K_BCL6 B cell Clusters") +
+  theme(plot.title = element_text(size=16, face = "bold")) +
+  scale_shape_manual(values=c(1, 2))
+Sample.E1020K_BCL6.plot2
+ggsave("Sample.E1020K_BCL6.plot2.pdf", width = 30, height = 20, units = "cm")
+
+##B cell clusters by Sex##
+Samples.male <- subset(Bcell_clus, subset = Sex == "Male")
+Samples.male.plot <- DimPlot(Samples.male, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B cell Clusters - Male") +
+  theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
+Samples.male.plot
+ggsave("Samples.male.plot.pdf", width = 30, height = 20, units = "cm")
+
+Samples.female <- subset(Bcell_clus, subset = Sex == "Female")
+Samples.female.plot <- DimPlot(Samples.female, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B cell Clusters - Female") +
+  theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
+Samples.female.plot
+ggsave("Samples.female.plot.pdf", width = 30, height = 20, units = "cm")
 
 
 ##Proportions of B cell subsets per Genotype##
@@ -759,7 +811,7 @@ bpr_3 <- ggplot(percentage, aes(fill=Type_assigned, y=percent, x=Mouse)) +
   xlab("Mouse") + ylab("% of B cells") + guides(fill=guide_legend(title="Clusters")) +
   theme(legend.title = element_text(face = "bold")) + ggtitle("Cellular Proportions") +
   theme(plot.title = element_text(size = 20, face = "bold")) +
-  theme(legend.text = element_text(size = 8))
+  theme(legend.text = element_text(size = 8)) + NoLegend()
 bpr_3
 
 ggsave("bpr_3.pdf", width = 30, height = 20, units = "cm")
@@ -834,6 +886,73 @@ pie_E1020K_BCL6 <- ggplot(percentage4, aes(x=Genotype, y=mean, fill=Type_assigne
 pie_E1020K_BCL6
 ggsave("pie_E1020K_BCL6.pdf", width = 30, height = 20, units = "cm")
 
+#Heatmaps#
+
+cell.numbers <- table(Bcell_clus@meta.data$Type_assigned, Bcell_clus@meta.data$Mouse)
+cell.numbers <- as.data.frame.matrix(cell.numbers)
+Bcell_clus_meta <- Bcell_clus@meta.data
+genotype.numbers <- Bcell_clus_meta %>% dplyr::count(Mouse)
+genotype.numbers.vector <- genotype.numbers %>% pull(n)
+str(genotype.numbers.vector)
+cell.percent <- sweep(cell.numbers, 2, genotype.numbers.vector, "/")
+cell.percent <- cell.percent*100
+
+cell_percent_heatmap <- pheatmap::pheatmap(t(cell.percent), cluster_rows = T, cluster_cols = T,show_rownames = T, show_colnames = T,
+                                           cellwidth = 30,cellheight = 30, angle_col = 45, display_numbers = T)
+
+
+cell.numbers1 <- table(Bcell_clus@meta.data$Type_assigned, Bcell_clus@meta.data$Genotype)
+cell.numbers1 <- as.data.frame.matrix(cell.numbers1)
+Bcell_clus_meta1 <- Bcell_clus@meta.data
+genotype.numbers1 <- Bcell_clus_meta1 %>% dplyr::count(Genotype)
+genotype.numbers.vector1 <- genotype.numbers1 %>% pull(n)
+str(genotype.numbers.vector1)
+cell.percent1 <- sweep(cell.numbers1, 2, genotype.numbers.vector1, "/")
+cell.percent1 <- cell.percent1*100
+
+cell_percent_heatmap1 <- pheatmap::pheatmap(t(cell.percent1), cluster_rows = T, cluster_cols = T,show_rownames = T, show_colnames = T,
+                                            cellwidth = 30, cellheight = 30, angle_col = 45, display_numbers = T)
+
+
+#Comparison plot#
+cell.percent <- tibble::rownames_to_column(cell.percent, "Cluster")
+
+cell.percent.overall <- cell.percent %>%
+  mutate(WT = (WT_1 + WT_2)/2, BCL6 = (BCL6_1 + BCL6_2)/2, E1020K = E1020K, E1020K_BCL6 = (E1020K_BCL6_1 + E1020K_BCL6_2)/2) %>%
+  mutate(WTvsBCL6 = WT/BCL6, WTvsE1020K = WT/E1020K, WTvsE1020K_BCL6 = WT/E1020K_BCL6,
+         BCL6vsE1020K = BCL6/E1020K, BCL6vsE1020K_BCL6 = BCL6/E1020K_BCL6,
+         E1020KvsE1020K_BCL6 = E1020K/E1020K_BCL6)
+
+colnames(cell.percent.overall)
+comparison_plt <- cell.percent.overall[, c(1, 12:17)] %>%
+  gather(key = "Comparison", value = "change", c(WTvsBCL6, WTvsE1020K, WTvsE1020K_BCL6,
+                                                 BCL6vsE1020K, BCL6vsE1020K_BCL6,
+                                                 E1020KvsE1020K_BCL6)) %>%
+  mutate(log2fold_change = log2(change))
+
+comparison_plt_1 <- ggplot(comparison_plt, aes(fill=Comparison, log2fold_change, x=Cluster)) + 
+  geom_bar(position="dodge", stat="identity") +
+  theme_bw() + scale_fill_manual(values = col_con6) +
+  xlab("") + ylab("Log2fold change") +
+  ggtitle("Abundance changes between Genotypes by Cluster") +
+  theme(legend.title = element_text(face = "bold")) +
+  theme(plot.title = element_text(size = 20, face = "bold")) +
+  theme(legend.text = element_text(size = 8)) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1 , hjust = 1)) +
+  theme(plot.margin = unit(c(1,1,1,3), "cm"))
+comparison_plt_1
+ggsave("comparison_plt_1.pdf", width = 30, height = 20, units = "cm")
+
+#Comparison heatmaps#
+Top6_max <- head(comparison_plt %>%
+                   arrange(desc(log2fold_change)))
+
+Top6_max-heatmap <- pheatmap::pheatmap(t(Top6_max), cluster_rows = T, cluster_cols = T,show_rownames = T, show_colnames = T,
+                                            cellwidth = 30, cellheight = 30, angle_col = 45, display_numbers = T)
+
+
+Top6_min <- head(comparison_plt %>%
+                   arrange(log2fold_change))
 
 ##use addmodule score to test for cell signature enrichment##
 
