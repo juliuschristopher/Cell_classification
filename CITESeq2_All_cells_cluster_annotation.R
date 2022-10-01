@@ -23,12 +23,14 @@ library(scTyper)
 library(rjags)
 library(infercnv)
 library(Polychrome)
+library(ggpubr)
 
 
 ##Colour paneles##
 col_con1 <- c('#e6194b', '#3cb44b', '#ffe119', '#4363d8', '#f58231', '#911eb4', '#46f0f0', '#f032e6', '#bcf60c', '#fabebe', '#008080', '#e6beff', '#9a6324', '#fffac8', '#800000', '#aaffc3', '#808000', '#ffd8b1', '#000075', '#808080', '#ffffff', '#000000')
 col_con2 <- createPalette(50,  c("#ff0000", "#00ff00", "#0000ff"))
 col_con2 <-as.character(col_con2)
+col_con3 <- c("black", "goldenrod2", "blue", "darkgreen")
 
 ## ##Loading data test#####
 All_cells <- LoadH5Seurat("CITE-Seq2_all_cells.h5seurat")
@@ -48,6 +50,29 @@ UMAP1 <- DimPlot(All_cells, reduction = "wnn.umap", cols = col_con2, pt.size = 1
   theme(plot.title = element_text(size=16, face = "bold"))
 print(UMAP1)
 ggsave("Original_cluster_1.pdf", width = 30, height = 20, units = "cm")
+
+##Allocate Genotype, Mouse number and Sex##
+
+#Genotype#
+head(All_cells[[]])
+Idents(All_cells) <- All_cells$orig.ident
+All_cells <- RenameIdents(All_cells, `a` = "WT", `b` ="WT", `c` ="BCL6", `d` = "BCL6", `f` = "E1020K",`g` ="E1020K_BCL6", `h` = "E1020K_BCL6")
+All_cells[["Genotype"]] <- Idents(All_cells)
+Idents(All_cells) <- All_cells$orig.ident
+
+#Mouse#
+head(All_cells[[]])
+Idents(All_cells) <- All_cells$orig.ident
+All_cells <- RenameIdents(All_cells, `a` = "WT_1", `b` ="WT_2", `c` ="BCL6_1", `d` = "BCL6_2", `f` = "E1020K",`g` ="E1020K_BCL6_1", `h` = "E1020K_BCL6_2")
+All_cells[["Mouse"]] <- Idents(All_cells)
+Idents(All_cells) <- All_cells$orig.ident
+
+#Sex#
+head(All_cells[[]])
+Idents(All_cells) <- All_cells$orig.ident
+All_cells <- RenameIdents(All_cells, `a` = "Female", `b` ="Male", `c` ="Female", `d` = "Male", `f` = "Male",`g` ="Male", `h` = "Male")
+All_cells[["Sex"]] <- Idents(All_cells)
+Idents(All_cells) <- All_cells$seurat_clusters
 
 
 ####Using canonical markers####
@@ -205,6 +230,7 @@ ggsave("B_cell_gr_plot.pdf", width = 30, height = 20, units = "cm")
 ##Make a UMAP plot with only B cell clusters##
 Bcell_clus <- subset(All_cells, idents = B_cell)
 
+Idents(Bcell_clus) <- Bcell_clus$seurat_clusters
 my_levels2 <- c("0", "1", "2", "10", "15", "18", "19", "20", "21", "23", "30", "35")
 Idents(Bcell_clus) <- factor(Idents(Bcell_clus), levels = my_levels2)
 
@@ -223,7 +249,7 @@ B220 <- FeaturePlot(Bcell_clus, features = "B220", reduction = "wnn.umap", cols 
 print(B220)
 ggsave("B220_ab.pdf", width = 30, height = 20, units = "cm")
 
-CD93 <- FeaturePlot(Bcell_clus, features = "Cd93", reduction = "wnn.umap", cols = magma(10), pt.size = 1) +
+CD93 <- FeaturePlot(Bcell_clus, features = "Cd93", reduction = "wnn.umap", cols = magma(10), pt.size = 1, order = TRUE) +
   theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD93 cell surface expression") +
   theme(plot.title = element_text(color="black", size=16, face="bold"))
 print(CD93)
@@ -272,7 +298,7 @@ print(CTLA4)
 ggsave("CTLA4_ab.pdf", width = 30, height = 20, units = "cm")
 
 PD_1 <- FeaturePlot(Bcell_clus, features = "Pd-1", reduction = "wnn.umap", cols = magma(10), pt.size = 1, order = TRUE) +
-  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("Pd-1 (FAS) cell surface expression") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("PD-1 (FAS) cell surface expression") +
   theme(plot.title = element_text(color="black", size=16, face="bold"))
 print(PD_1)
 ggsave("PD_1_ab.pdf", width = 30, height = 20, units = "cm")
@@ -284,7 +310,7 @@ print(PD_L1)
 ggsave("PD_L1_ab.pdf", width = 30, height = 20, units = "cm")
 
 PD_L2 <- FeaturePlot(Bcell_clus, features = "Pd-L2", reduction = "wnn.umap", cols = magma(10), pt.size = 1, order = TRUE) +
-  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("PD-L1 cell surface expression") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("PD-L2 cell surface expression") +
   theme(plot.title = element_text(color="black", size=16, face="bold"))
 print(PD_L2)
 ggsave("PD_L2_ab.pdf", width = 30, height = 20, units = "cm")
@@ -307,6 +333,11 @@ CD86 <- FeaturePlot(Bcell_clus, features = "Cd86", reduction = "wnn.umap", cols 
 print(CD86)
 ggsave("CD86_ab.pdf", width = 30, height = 20, units = "cm")
 
+CD40 <- FeaturePlot(Bcell_clus, features = "Cd40", reduction = "wnn.umap", cols = magma(10), pt.size = 1, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD40 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD40)
+ggsave("CD40_ab.pdf", width = 30, height = 20, units = "cm")
 
 #RNA UMAP
 DefaultAssay(Bcell_clus) <- "RNA"
@@ -393,6 +424,12 @@ CD86_rna <- FeaturePlot(Bcell_clus, features = "Cd86", reduction = "wnn.umap", c
   theme(plot.title = element_text(color="black", size=16, face="bold"))
 print(CD86_rna)
 ggsave("CD86_rna.pdf", width = 30, height = 20, units = "cm")
+
+CD40_rna <- FeaturePlot(Bcell_clus, features = "Cd40", reduction = "wnn.umap", cols = mako(10), pt.size = 1, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("CD40 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(CD40_rna)
+ggsave("CD40_rna.pdf", width = 30, height = 20, units = "cm")
 
 #ADT VlnPlot
 DefaultAssay(Bcell_clus) <- "ADT"
@@ -502,6 +539,14 @@ ggsave("Vln_CD86.pdf", width = 30, height = 20, units = "cm")
 
 CD86hi_Bcells <- c("2", "23")
 
+Vln_CD40 <- VlnPlot(Bcell_clus, features = "Cd40", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD40 cell surface expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD40)
+ggsave("Vln_CD40.pdf", width = 30, height = 20, units = "cm")
+
+Activated_Bcells <- c("35")
+
 #RNA VlnPlot
 DefaultAssay(Bcell_clus) <- "RNA"
 Vln_CD93_rna <- VlnPlot(Bcell_clus, features = "Cd93", cols = col_con2) +
@@ -590,6 +635,12 @@ Vln_CD86_rna <- VlnPlot(Bcell_clus, features = "Cd86", cols = col_con2) +
 print(Vln_CD86_rna)
 ggsave("Vln_CD86_rna.pdf", width = 30, height = 20, units = "cm")
 
+Vln_CD40_rna <- VlnPlot(Bcell_clus, features = "Cd40", cols = col_con2) +
+  theme_bw() + NoLegend() + ggtitle("CD40 mRNA expression") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(Vln_CD40_rna)
+ggsave("Vln_CD40_rna.pdf", width = 30, height = 20, units = "cm")
+
 ##Summary B cell canonical markers##
 
 Transitional_Bcells <- c("15", "30")
@@ -601,14 +652,16 @@ CTLA4hi_Bcells <- c("2", "18")
 GC_Bcells <- c("23")
 Memory_Bcells <- c("2", "10", "23")
 CD86hi_Bcells <- c("2", "23")
+Activated_Bcells <- c("35")
+
 
 #Change Idents on Bcell_clus#
-Idents(Bcell_clus)
+Idents(Bcell_clus) <- Bcell_clus$seurat_clusters
 Bcell_clus <- RenameIdents(Bcell_clus, `0` = "IgM+ IgD+ Follicular B cells", `1` ="IgM+ IgD+ Marginal Zone B cells",
                            `2` = "CTLA4+ CD86+ Memory B cells", `10` = "Memory B cells", `15` = "IgM+ IgD+ Transitional B cells",
                            `18` = "IgD+ CTLA4+ Follicular B cells", `19` = "IgD+ Follicular B cells (1)", `20` = "IgM+ Marginal Zone B cells",
                            `21` = "IgD+ Follicular B cells (2)", `23` = "Germinal Centre B cells/CD86+ Memory B cells", `30` = "Transitonal B cells",
-                           `35` = "IgD+ Follicular B cells (3)")
+                           `35` = "Activated IgD+ Follicular B cells")
 Bcell_clus[["Type_assigned"]] <- Idents(Bcell_clus)
 Idents(Bcell_clus)
 
@@ -624,7 +677,165 @@ UMAP3 <- DimPlot(Bcell_clus, reduction = "wnn.umap", cols = col_con2, pt.size = 
 print(UMAP3)
 ggsave("Bcellsl_cluster_2.pdf", width = 30, height = 20, units = "cm")
 
-##use addmoduel score to test for cell signature enrichment##
+UMAP4 <- DimPlot(Bcell_clus, reduction = "wnn.umap", cols = col_con3, pt.size = 1, label = FALSE, repel = TRUE, group.by = "Genotype") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B cell Clusters CITE-Seq-2 by Genotype") +
+  theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
+print(UMAP4)
+ggsave("Bcellsl_cluster_3.pdf", width = 30, height = 20, units = "cm")
+
+UMAP4 <- DimPlot(Bcell_clus, reduction = "wnn.umap", cols = col_con3, pt.size = 1, label = FALSE, repel = TRUE, group.by = "Genotype") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("B cell Clusters CITE-Seq-2 by Genotype") +
+  theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
+print(UMAP4)
+ggsave("Bcellsl_cluster_3.pdf", width = 30, height = 20, units = "cm")
+
+head(Bcell_clus[[]])
+
+##B cell clusters by Genotype##
+Sample.WT <- subset(Bcell_clus, subset = Genotype == "WT")
+Sample.WT.plot1 <- DimPlot(Sample.WT, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("WT B cell Clusters") +
+  theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
+Sample.WT.plot1
+ggsave("Sample.WT.plot1.pdf", width = 30, height = 20, units = "cm")
+
+Sample.BCL6 <- subset(Bcell_clus, subset = Genotype == "BCL6")
+Sample.BCL6.plot1 <- DimPlot(Sample.BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("BCL6 B cell Clusters") +
+  theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
+Sample.BCL6.plot1
+ggsave("Sample.BCL6.plot1.pdf", width = 30, height = 20, units = "cm")
+
+Sample.E1020K <- subset(Bcell_clus, subset = Genotype == "E1020K")
+Sample.E1020K.plot1 <- DimPlot(Sample.E1020K, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K B cell Clusters") +
+  theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
+Sample.E1020K.plot1
+ggsave("Sample.E1020K.plot1.pdf", width = 30, height = 20, units = "cm")
+
+Sample.E1020K_BCL6 <- subset(Bcell_clus, subset = Genotype == "E1020K_BCL6")
+Sample.E1020K_BCL6.plot1 <- DimPlot(Sample.E1020K_BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K_BCL6 B cell Clusters") +
+  theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
+Sample.E1020K_BCL6.plot1
+ggsave("Sample.E1020K_BCL6.plot1.pdf", width = 30, height = 20, units = "cm")
+
+
+##Proportions of B cell subsets per Genotype##
+#Boxplot#
+meta.data <- Bcell_clus@meta.data
+counts <- meta.data %>% group_by(Sex, Genotype, Mouse, Type_assigned) %>% summarise(count = n())
+percentage <- counts %>% group_by(Genotype, Mouse) %>% mutate(percent = count/sum(count)*100)
+
+bxp <- ggboxplot(percentage, x = "Type_assigned", y = "percent",
+                 color = "Genotype", palette = c("WT" = "black","BCL6" = "goldenrod2","E1020K" = "blue", "E1020K_BCL6" = "darkgreen"), add = "jitter", shape = "Genotype", outlier.shape = NA) +
+  labs(x = "B cell Popualtions", y = "% of B cells", color = "Genotype", shape = "Genotype") +
+  theme_bw() + theme(axis.text.x = element_text(angle = 45, vjust = 1 , hjust = 1)) +
+  theme(plot.margin = unit(c(1,1,1,1), "cm"))
+bxp
+ggsave("bxp.pdf", width = 30, height = 20, units = "cm")
+
+#Bar Chart#
+bpr_1 <- ggplot(percentage, aes(fill=Type_assigned, y=percent, x=Genotype)) + 
+  geom_bar(position="fill", stat="identity") + theme_bw() + scale_fill_manual(values = col_con2) +
+  xlab("Genotype") + ylab("% of B cells") + guides(fill=guide_legend(title="Clusters")) +
+  theme(legend.title = element_text(face = "bold")) + ggtitle("Cellular Proportions") +
+  theme(plot.title = element_text(size = 20, face = "bold")) +
+  theme(legend.text = element_text(size = 8)) + NoLegend()
+bpr_1
+ggsave("bpr_1.pdf", width = 30, height = 20, units = "cm")
+
+bpr_2 <- ggplot(percentage, aes(fill=Type_assigned, y=percent, x=Sex)) + 
+  geom_bar(position="fill", stat="identity") + theme_bw() + scale_fill_manual(values = col_con2) +
+  xlab("Sex") + ylab("% of B cells") + guides(fill=guide_legend(title="Clusters")) +
+  theme(legend.title = element_text(face = "bold")) + ggtitle("Cellular Proportions") +
+  theme(plot.title = element_text(size = 20, face = "bold")) +
+  theme(legend.text = element_text(size = 8))
+bpr_2
+ggsave("bpr_2.pdf", width = 30, height = 20, units = "cm")
+
+bpr_3 <- ggplot(percentage, aes(fill=Type_assigned, y=percent, x=Mouse)) + 
+  geom_bar(position="fill", stat="identity") + theme_bw() + scale_fill_manual(values = col_con2) +
+  xlab("Mouse") + ylab("% of B cells") + guides(fill=guide_legend(title="Clusters")) +
+  theme(legend.title = element_text(face = "bold")) + ggtitle("Cellular Proportions") +
+  theme(plot.title = element_text(size = 20, face = "bold")) +
+  theme(legend.text = element_text(size = 8))
+bpr_3
+
+ggsave("bpr_3.pdf", width = 30, height = 20, units = "cm")
+
+#Pie charts
+percentage1 <- percentage %>%
+  filter(Genotype == "WT") %>%
+  group_by(Genotype, Type_assigned) %>%
+  summarise(mean = mean(percent))
+
+percentage2 <- percentage %>%
+  filter(Genotype == "BCL6") %>%
+  group_by(Genotype, Type_assigned) %>%
+  summarise(mean = mean(percent))
+
+percentage3 <- percentage %>%
+  filter(Genotype == "E1020K") %>%
+  group_by(Genotype, Type_assigned) %>%
+  summarise(mean = mean(percent))
+
+percentage4 <- percentage %>%
+  filter(Genotype == "E1020K_BCL6") %>%
+  group_by(Genotype, Type_assigned) %>%
+  summarise(mean = mean(percent))
+
+
+pie_WT <- ggplot(percentage1, aes(x=Genotype, y=mean, fill=Type_assigned)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  theme_classic() + scale_fill_manual(values = col_con2) +
+  guides(fill=guide_legend(title="Clusters")) +
+  xlab("") + ylab("") +
+  theme(legend.title = element_text(size = 15, face = "bold")) + ggtitle("Cellular Proportions - WT") +
+  theme(plot.title = element_text(size = 20, face = "bold")) +
+  theme(legend.text = element_text(size = 8)) + NoLegend()
+pie_WT
+ggsave("pie_WT.pdf", width = 30, height = 20, units = "cm")
+
+pie_BCL6 <- ggplot(percentage2, aes(x=Genotype, y=mean, fill=Type_assigned)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  theme_classic() + scale_fill_manual(values = col_con2) +
+  guides(fill=guide_legend(title="Clusters")) +
+  xlab("") + ylab("") +
+  theme(legend.title = element_text(size = 15, face = "bold")) + ggtitle("Cellular Proportions - BCL6") +
+  theme(plot.title = element_text(size = 20, face = "bold")) +
+  theme(legend.text = element_text(size = 8)) + NoLegend()
+pie_BCL6
+ggsave("pie_BCL6.pdf", width = 30, height = 20, units = "cm")
+
+pie_E1020K <- ggplot(percentage3, aes(x=Genotype, y=mean, fill=Type_assigned)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  theme_classic() + scale_fill_manual(values = col_con2) +
+  guides(fill=guide_legend(title="Clusters")) +
+  xlab("") + ylab("") +
+  theme(legend.title = element_text(size = 15, face = "bold")) + ggtitle("Cellular Proportions - E1020K") +
+  theme(plot.title = element_text(size = 20, face = "bold")) +
+  theme(legend.text = element_text(size = 8)) + NoLegend()
+pie_E1020K
+ggsave("pie_E1020K.pdf", width = 30, height = 20, units = "cm")
+
+pie_E1020K_BCL6 <- ggplot(percentage4, aes(x=Genotype, y=mean, fill=Type_assigned)) +
+  geom_bar(stat="identity", width=1) +
+  coord_polar("y", start=0) +
+  theme_classic() + scale_fill_manual(values = col_con2) +
+  guides(fill=guide_legend(title="Clusters")) +
+  xlab("") + ylab("") +
+  theme(legend.title = element_text(size = 15, face = "bold")) + ggtitle("Cellular Proportions - E1020K_BCL6") +
+  theme(plot.title = element_text(size = 20, face = "bold")) +
+  theme(legend.text = element_text(size = 8)) + NoLegend()
+pie_E1020K_BCL6
+ggsave("pie_E1020K_BCL6.pdf", width = 30, height = 20, units = "cm")
+
+
+##use addmodule score to test for cell signature enrichment##
 
 
 ##Use scGate to gate out popualtions##
