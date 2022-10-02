@@ -1070,6 +1070,50 @@ ggsave("Cluster2_p3.pdf", width = 30, height = 20, units = "cm")
 Idents(Cluster2) <- Cluster2$wsnn_res.2
 Cluster2[["Cluster2_SubClusters"]] <- Idents(Cluster2)
 
+#Plots by genotype#
+Cluster2.WT <- subset(Cluster2, subset = Genotype == "WT")
+Cluster2.WT.plot <- DimPlot(Cluster2.WT, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("WT Cluster 2 - Sub-Clusters") +
+  theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
+Cluster2.WT.plot
+ggsave("Cluster2.WT.plot.pdf", width = 30, height = 20, units = "cm")
+
+Cluster2.BCL6 <- subset(Cluster2, subset = Genotype == "BCL6")
+Cluster2.BCL6.plot <- DimPlot(Cluster2.BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("BCL6 Cluster 2 - Sub-Clusters") +
+  theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
+Cluster2.BCL6.plot
+ggsave("Cluster2.BCL6.plot.pdf", width = 30, height = 20, units = "cm")
+
+Cluster2.E1020K <- subset(Cluster2, subset = Genotype == "E1020K")
+Cluster2.E1020K.plot <- DimPlot(Cluster2.E1020K, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K Cluster 2 - Sub-Clusters") +
+  theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
+Cluster2.E1020K.plot
+ggsave("Cluster2.E1020K.plot.pdf", width = 30, height = 20, units = "cm")
+
+Cluster2.E1020K_BCL6 <- subset(Cluster2, subset = Genotype == "E1020K_BCL6")
+Cluster2.E1020K_BCL6.plot <- DimPlot(Cluster2.E1020K_BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K_BCL6 Cluster 2 - Sub-Clusters") +
+  theme(plot.title = element_text(size=16, face = "bold")) + NoLegend()
+Cluster2.E1020K_BCL6.plot
+ggsave("Cluster2.E1020K_BCL6.plot.pdf", width = 30, height = 20, units = "cm")
+
+Cluster2.E1020K_BCL6.plot2 <- DimPlot(Cluster2.E1020K_BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, group.by = "cloneType")  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K_BCL6 Cluster 2 - Sub-Clusters: Clonotype Abundance") +
+  theme(plot.title = element_text(size=16, face = "bold"))
+Cluster2.E1020K_BCL6.plot2
+ggsave("Cluster2.E1020K_BCL6.plot2.pdf", width = 30, height = 20, units = "cm")
+
+Cluster2.E1020K_BCL6.plot3 <- DimPlot(Cluster2.E1020K_BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, group.by = "Mouse")  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K_BCL6 Cluster 2 - Sub-Clusters: By Mouse") +
+  theme(plot.title = element_text(size=16, face = "bold"))
+Cluster2.E1020K_BCL6.plot3
+ggsave("Cluster2.E1020K_BCL6.plot2.pdf", width = 30, height = 20, units = "cm")
+
+head(Cluster2[[]])
+
+
 
 ##Analysis of Cluster2 subclusters##
 #Boxplot#
@@ -1086,18 +1130,147 @@ bxp2 <- ggboxplot(percentage2, x = "Cluster2_SubClusters", y = "percent",
 bxp2
 ggsave("bxp2.pdf", width = 30, height = 20, units = "cm")
 
+#Heatmaps#
+cell.numbers2 <- table(Cluster2@meta.data$Cluster2_SubClusters, Cluster2@meta.data$Mouse)
+cell.numbers2 <- as.data.frame.matrix(cell.numbers2)
+cell.numbers2_meta <- Cluster2@meta.data
+genotype.numbers2 <- cell.numbers2_meta %>% dplyr::count(Mouse)
+genotype.numbers.vector2 <- genotype.numbers2 %>% pull(n)
+str(genotype.numbers.vector2)
+cell.percent2 <- sweep(cell.numbers2, 2, genotype.numbers.vector2, "/")
+cell.percent2 <- cell.percent2*100
+
+cell_percent_heatmap2 <- pheatmap::pheatmap(t(cell.percent2), cluster_rows = T, cluster_cols = T,show_rownames = T, show_colnames = T,
+                                           cellwidth = 30,cellheight = 30, angle_col = 45, display_numbers = T)
+
+
+cell.numbers3 <- table(Cluster2@meta.data$Cluster2_SubClusters, Cluster2@meta.data$Genotype)
+cell.numbers3 <- as.data.frame.matrix(cell.numbers3)
+cell.numbers3_meta <- Cluster2@meta.data
+genotype.numbers3 <- cell.numbers3_meta %>% dplyr::count(Genotype)
+genotype.numbers.vector3 <- genotype.numbers3 %>% pull(n)
+str(genotype.numbers.vector3)
+cell.percent3 <- sweep(cell.numbers3, 2, genotype.numbers.vector3, "/")
+cell.percent3 <- cell.percent3*100
+
+cell_percent_heatmap3 <- pheatmap::pheatmap(t(cell.percent3), cluster_rows = T, cluster_cols = T,show_rownames = T, show_colnames = T,
+                                            cellwidth = 30,cellheight = 30, angle_col = 45, display_numbers = T)
+
 #Individual subcluster analysis#
-Idents(Bcell_clus) <- Bcell_clus$seurat_clusters
+Idents(Cluster2)
 
-Cluster2_ADT <- FindMarkers(Bcell_clus, ident.1 = 2, assay = "ADT")
-Cluster2_ADT <- Cluster2_ADT %>%
+#Sub-cluster2#
+Cluster2_clus2_ADT <- FindMarkers(Cluster2, ident.1 = 2, assay = "ADT")
+Cluster2_clus2_ADT <- Cluster2_clus2_ADT %>%
   filter(p_val_adj <= 0.05) %>%
   arrange(desc(avg_log2FC))
 
-Cluster2_RNA <- FindMarkers(Bcell_clus, ident.1 = 2, assay = "RNA")
-Cluster2_RNA <- Cluster2_RNA %>%
+Cluster2_clus2_RNA <- FindMarkers(Cluster2, ident.1 = 2, assay = "RNA")
+Cluster2_clus2_RNA <- Cluster2_clus2_RNA %>%
   filter(p_val_adj <= 0.05) %>%
   arrange(desc(avg_log2FC))
+
+#Sub-cluster8#
+Cluster2_clus8_ADT <- FindMarkers(Cluster2, ident.1 = 8, assay = "ADT")
+Cluster2_clus8_ADT <- Cluster2_clus8_ADT %>%
+  filter(p_val_adj <= 0.05) %>%
+  arrange(desc(avg_log2FC))
+
+Cluster2_clus8_RNA <- FindMarkers(Cluster2, ident.1 = 8, assay = "RNA")
+Cluster2_clus8_RNA <- Cluster2_clus8_RNA %>%
+  filter(p_val_adj <= 0.05) %>%
+  arrange(desc(avg_log2FC))
+
+#Sub-cluster9#
+Cluster2_clus9_ADT <- FindMarkers(Cluster2, ident.1 = 9, assay = "ADT")
+Cluster2_clus9_ADT <- Cluster2_clus9_ADT %>%
+  filter(p_val_adj <= 0.05) %>%
+  arrange(desc(avg_log2FC))
+
+Cluster2_clus9_RNA <- FindMarkers(Cluster2, ident.1 = 9, assay = "RNA")
+Cluster2_clus9_RNA <- Cluster2_clus9_RNA %>%
+  filter(p_val_adj <= 0.05) %>%
+  arrange(desc(avg_log2FC))
+
+##Clonotype analysis of Cluster2##
+DimPlot(Cluster2, reduction = "wnn.umap", group.by = "CTstrict")
+colnames(Cluster2[[]])
+head(Cluster2[[]])
+
+#IgM
+FeaturePlot(Cluster2, features = "Ighm", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE)
+
+#IgD
+FeaturePlot(Cluster2, features = "Ighd", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE)
+
+#IgG
+FeaturePlot(Cluster2, features = "Ighg1", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE)
+FeaturePlot(Cluster2, features = "Ighg2b", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE)
+FeaturePlot(Cluster2, features = "Ighg2c", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE)
+FeaturePlot(Cluster2, features = "Ighg3", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE)
+
+#IgA
+FeaturePlot(Cluster2, features = "Igha", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE)
+
+#IgE
+FeaturePlot(Cluster2, features = "Ighe", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE)
+
+
+#Ig light chains
+FeaturePlot(Cluster2, features = "Igkc", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = FALSE)
+FeaturePlot(Cluster2, features = "Iglc1", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE)
+FeaturePlot(Cluster2, features = "Iglc2", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = FALSE)
+FeaturePlot(Cluster2, features = "Iglc3", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = FALSE)
+
+
+FeaturePlot(Cluster2, features = "Jchain", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE)
+
+FeaturePlot(Cluster2, features = "Ighg2c", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE)
+
+
+
+##Individual markers##
+#RNA#
+DefaultAssay(Cluster2) <- "RNA"
+FeaturePlot(Cluster2, features = "Sdc1", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE) #Plasmablast
+FeaturePlot(Cluster2, features = "Prdm1", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE) #Plasma cell
+FeaturePlot(Cluster2, features = "Bcl6", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE) #GC B cells
+FeaturePlot(Cluster2, features = "Aicda", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE) #GC B cells
+FeaturePlot(Cluster2, features = "Cyp11a1", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE) #B220- B cells
+FeaturePlot(Cluster2, features = "Cd5", blend = TRUE, reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE) #B1a B cells
+FeaturePlot(Cluster2, features = "Spn", reduction = "wnn.umap", cols = mako(10), pt.size = 3, order = TRUE) #CD43+ B cells
+
+
+
+VlnPlot(Cluster2, cols = col_con2, features = "Bcl6") +
+  theme_bw() + xlab('Cluster 2 - Sub-Clusters')
+
+VlnPlot(Cluster2, cols = col_con2, features = "Aicda") +
+  theme_bw() + xlab('Cluster 2 - Sub-Clusters')
+
+VlnPlot(Cluster2, cols = col_con2, features = "Cyp11a1") +
+  theme_bw() + xlab('Cluster 2 - Sub-Clusters')
+
+VlnPlot(Cluster2, cols = col_con2, features = "Cd5") +
+  theme_bw() + xlab('Cluster 2 - Sub-Clusters')
+
+VlnPlot(Cluster2, cols = col_con2, features = "Spn") +
+  theme_bw() + xlab('Cluster 2 - Sub-Clusters')
+
+#ADT#
+DefaultAssay(Cluster2) <- "ADT"
+FeaturePlot(Cluster2, features = "Pd-L2", reduction = "wnn.umap", cols = magma(10), pt.size = 1.5, order = TRUE)
+FeaturePlot(Cluster2, features = "Cd80", reduction = "wnn.umap", cols = magma(10), pt.size = 1.5, order = TRUE)
+FeaturePlot(Cluster2, features = "Ctla4", reduction = "wnn.umap", cols = magma(10), pt.size = 1.5, order = TRUE)
+FeaturePlot(Cluster2, features = "B220", reduction = "wnn.umap", cols = magma(10), pt.size = 1.5, order = TRUE)
+
+
+FeaturePlot(Cluster2, features = c("Pd-L2", "Cd80"), blend = TRUE, reduction = "wnn.umap", pt.size = 1.5, order = TRUE)
+
+
+
+
+
 
 
 
