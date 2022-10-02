@@ -24,6 +24,7 @@ library(rjags)
 library(infercnv)
 library(Polychrome)
 library(ggpubr)
+library(clustree)
 
 
 ##Colour paneles##
@@ -965,7 +966,138 @@ Cluster2_RNA <- Cluster2_RNA %>%
 
 
 ##Re-clustering of Cluster 2##
+setwd("/Volumes/GoogleDrive/Shared drives/Okkengroup/Experiments/Julius/Experiments/CITE-Sequencing/CITE-Seq (2)/Overall_analysis/CITE-Seq2_all_cells/Cell_classification/Bcells/Cluster2")
 
+Idents(Bcell_clus) <- Bcell_clus$seurat_clusters
+Cluster2 <- subset(Bcell_clus, idents = 2)
+
+#Remove previous ssn_res columns#
+columns.to.remove <- c("RNA_snn_res.0.01", "RNA_snn_res.0.05", "RNA_snn_res.0.1", "RNA_snn_res.0.5", "RNA_snn_res.1",
+                       "RNA_snn_res.1.5", "RNA_snn_res.2", "RNA_snn_res.0.2", "RNA_snn_res.0.3", "RNA_snn_res.0.4",
+                       "RNA_snn_res.0.6", "RNA_snn_res.0.7", "RNA_snn_res.0.8", "RNA_snn_res.0.9","ADT_snn_res.0.01",
+                       "ADT_snn_res.0.05", "ADT_snn_res.0.1", "ADT_snn_res.0.5", "ADT_snn_res.1", "ADT_snn_res.1.5",
+                       "ADT_snn_res.2", "ADT_snn_res.1.1", "ADT_snn_res.1.2", "ADT_snn_res.1.3", "ADT_snn_res.1.4",
+                       "RNA.weight", "ADT.weight", "wsnn_res.0.01", "wsnn_res.0.05", "wsnn_res.0.1", "wsnn_res.0.5",
+                       "wsnn_res.1", "wsnn_res.1.5", "wsnn_res.2", "wsnn_res.0.6", "wsnn_res.0.7", "wsnn_res.0.8",
+                       "wsnn_res.0.9")
+for(i in columns.to.remove) {
+  Cluster2[[i]] <- NULL
+}
+head(Cluster2[[]])
+
+#RNA#
+#Normalise subset#
+DefaultAssay(Cluster2) <- "RNA"
+
+#RNA normalisation#
+Cluster2 <- NormalizeData(Cluster2, verbose = TRUE)
+Cluster2 <- FindVariableFeatures(Cluster2, nfeatures = 3000)
+Cluster2 <- ScaleData(Cluster2)
+
+##Visualisation#
+top20 <-  head(VariableFeatures(Cluster2), 20)
+plot1.1 <-  VariableFeaturePlot(Cluster2)
+top20_plot <-  LabelPoints(plot = plot1.1, points = top20, repel = TRUE, xnudge = 0, ynudge = 0) #Maybe need to remove BCR genes?
+print(top20_plot)
+
+#RNA PCA#
+Cluster2 <- RunPCA(Cluster2, verbose = FALSE, features = VariableFeatures(object = Cluster2))
+pca_variance <- Cluster2@reductions$pca@stdev^2
+plot(pca_variance/sum(pca_variance), 
+     ylab="Proportion of variance explained", 
+     xlab="Principal component")
+abline(h = 0.01) #50 - (assumed)
+
+#RNA clustering#
+DefaultAssay(Cluster2) <- "RNA"
+
+Cluster2 <- FindNeighbors(Cluster2, dims = 1:50)
+Cluster2 <- FindClusters(Cluster2, resolution = 1.1, verbose = FALSE) #1.1 for the resolution
+clustree(Cluster2, prefix = "RNA_snn_res.") + theme(legend.position="bottom")
+Cluster2 <-RunUMAP(Cluster2, dims = 1:50, assay = 'RNA', reduction.name = 'rna.umap', reduction.key = 'rnaUMAP_')
+Cluster2_p1 <- DimPlot(Cluster2, reduction = "rna.umap", cols = col_con2, pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("Cluster2 Sub-Clusters") +
+  theme(plot.title = element_text(size=16, face = "bold"))
+print(Cluster2_p1)
+ggsave("Cluster2_p1.pdf", width = 30, height = 20, units = "cm")
+
+#ADT#
+DefaultAssay(Cluster2) <- "ADT"
+
+#ADT normalisation#
+VariableFeatures(Cluster2) <- rownames(Cluster2[["ADT"]])
+Cluster2 <- NormalizeData(Cluster2, normalization.method = "CLR", margin = 2)
+Cluster2 <- ScaleData(Cluster2)
+Cluster2 <- RunPCA(Cluster2, reduction.name = 'apca', approx = FALSE)
+
+#ADT PCA#
+apca_variance <- Cluster2@reductions$apca@stdev^2
+plot(apca_variance/sum(apca_variance), 
+     ylab="Proportion of variance explained", 
+     xlab="Principal component")
+abline(h = 0.01) #25
+
+#ADT clustering#
+Cluster2 <- FindNeighbors(Cluster2, dims = 1:25, reduction = "apca")
+Cluster2 <- FindClusters(Cluster2, resolution = 1.0, verbose = FALSE) #1.0 for the resolution
+clustree(Cluster2, prefix = "ADT_snn_res.") + theme(legend.position="bottom")
+Cluster2 <- RunUMAP(Cluster2, reduction = 'apca', dims = 1:25, assay = 'ADT', reduction.name = 'adt.umap', reduction.key = 'adtUMAP_')
+Cluster2_p2 <- DimPlot(Cluster2, reduction = "adt.umap", cols = col_con2, pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("Cluster2 Sub-Clusters - ADT") +
+  theme(plot.title = element_text(size=16, face = "bold"))
+print(Cluster2_p2)
+ggsave("Cluster2_p2.pdf", width = 30, height = 20, units = "cm")
+
+#WNN#
+DefaultAssay(Cluster2) <- "RNA"
+
+#Combine into wnn plot#
+Cluster2 <- FindMultiModalNeighbors(
+  Cluster2, reduction.list = list("pca", "apca"), 
+  dims.list = list(1:50, 1:25), modality.weight.name = "RNA.weight")
+
+#WNN clustering#
+Cluster2 <- FindClusters(Cluster2, graph.name = "wsnn", algorithm = 3, resolution = 2.0, verbose = TRUE) #2.0 for the resolution
+clustree(Cluster2, prefix = "wsnn_res.") + theme(legend.position="bottom")
+Cluster2 <- RunUMAP(Cluster2, nn.name = "weighted.nn", reduction.name = "wnn.umap", reduction.key = "wnnUMAP_")
+Cluster2_p3 <- DimPlot(Cluster2, reduction = "wnn.umap", cols = col_con2, pt.size = 1) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("Cluster2 Sub-Clusters") +
+  theme(plot.title = element_text(size=16, face = "bold"))
+print(Cluster2_p3)
+ggsave("Cluster2_p3.pdf", width = 30, height = 20, units = "cm")
+
+#Set Idents and generate new column for Cluster2 subclusters#
+Idents(Cluster2) <- Cluster2$wsnn_res.2
+Cluster2[["Cluster2_SubClusters"]] <- Idents(Cluster2)
+
+
+##Analysis of Cluster2 subclusters##
+#Boxplot#
+head(Cluster2[[]])
+meta.data2 <- Cluster2@meta.data
+counts2 <- meta.data2 %>% group_by(Sex, Genotype, Mouse, Cluster2_SubClusters) %>% summarise(count = n())
+percentage2 <- counts2 %>% group_by(Genotype, Mouse) %>% mutate(percent = count/sum(count)*100)
+
+bxp2 <- ggboxplot(percentage2, x = "Cluster2_SubClusters", y = "percent",
+                 color = "Genotype", palette = c("WT" = "black","BCL6" = "goldenrod2","E1020K" = "blue", "E1020K_BCL6" = "darkgreen"), add = "jitter", shape = "Genotype", outlier.shape = NA) +
+  labs(x = "Cluster 2 - Sub-Popualtions", y = "% of Cluster 2 B cells", color = "Genotype", shape = "Genotype") +
+  theme_bw() + theme(axis.text.x = element_text(angle = 45, vjust = 1 , hjust = 1)) +
+  theme(plot.margin = unit(c(1,1,1,1), "cm"))
+bxp2
+ggsave("bxp2.pdf", width = 30, height = 20, units = "cm")
+
+#Individual subcluster analysis#
+Idents(Bcell_clus) <- Bcell_clus$seurat_clusters
+
+Cluster2_ADT <- FindMarkers(Bcell_clus, ident.1 = 2, assay = "ADT")
+Cluster2_ADT <- Cluster2_ADT %>%
+  filter(p_val_adj <= 0.05) %>%
+  arrange(desc(avg_log2FC))
+
+Cluster2_RNA <- FindMarkers(Bcell_clus, ident.1 = 2, assay = "RNA")
+Cluster2_RNA <- Cluster2_RNA %>%
+  filter(p_val_adj <= 0.05) %>%
+  arrange(desc(avg_log2FC))
 
 
 
