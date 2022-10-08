@@ -3,7 +3,7 @@
 
 ####Set up####
 ##Set working firectory##
-etwd("/Volumes/GoogleDrive/Shared drives/Okkengroup/Experiments/Julius/Experiments/CITE-Sequencing/CITE-Seq (2)/Overall_analysis/CITE-Seq2_all_cells/Cell_classification")
+setwd("/Volumes/GoogleDrive/Shared drives/Okkengroup/Experiments/Julius/Experiments/CITE-Sequencing/CITE-Seq (2)/Overall_analysis/CITE-Seq2_all_cells/Cell_classification")
 
 ##Packages##
 library(clustifyr)
@@ -496,7 +496,7 @@ Vln_CD95 <- VlnPlot(Bcell_clus, features = "Cd95", cols = col_con2) +
 print(Vln_CD95)
 ggsave("Vln_CD95.pdf", width = 30, height = 20, units = "cm")
 
-GC_Bcells <- c("23")
+GC_Bcells <- c("23", "24")
 
 Vln_CTLA4 <- VlnPlot(Bcell_clus, features = "Ctla4", cols = col_con2) +
   theme_bw() + NoLegend() + ggtitle("CTLA4 cell surface expression") +
@@ -1109,7 +1109,7 @@ Cluster2.E1020K_BCL6.plot3 <- DimPlot(Cluster2.E1020K_BCL6, label = FALSE ,reduc
   theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K_BCL6 Cluster 2 - Sub-Clusters: By Mouse") +
   theme(plot.title = element_text(size=16, face = "bold"))
 Cluster2.E1020K_BCL6.plot3
-ggsave("Cluster2.E1020K_BCL6.plot2.pdf", width = 30, height = 20, units = "cm")
+ggsave("Cluster2.E1020K_BCL6.plot3.pdf", width = 30, height = 20, units = "cm")
 
 head(Cluster2[[]])
 
@@ -1164,11 +1164,16 @@ Cluster2_clus2_ADT <- FindMarkers(Cluster2, ident.1 = 2, assay = "ADT")
 Cluster2_clus2_ADT <- Cluster2_clus2_ADT %>%
   filter(p_val_adj <= 0.05) %>%
   arrange(desc(avg_log2FC))
+Cluster2_clus2_ADT <- tibble::rownames_to_column(Cluster2_clus2_ADT, "Antibodies")
+write.csv(Cluster2_clus2_ADT, "Cluster2_clus2_ADT.csv")
+
 
 Cluster2_clus2_RNA <- FindMarkers(Cluster2, ident.1 = 2, assay = "RNA")
 Cluster2_clus2_RNA <- Cluster2_clus2_RNA %>%
   filter(p_val_adj <= 0.05) %>%
   arrange(desc(avg_log2FC))
+Cluster2_clus2_RNA <- tibble::rownames_to_column(Cluster2_clus2_RNA, "Genes")
+write.csv(Cluster2_clus2_RNA, "Cluster2_clus2_RNA.csv")
 
 #Sub-cluster8#
 Cluster2_clus8_ADT <- FindMarkers(Cluster2, ident.1 = 8, assay = "ADT")
@@ -1186,11 +1191,15 @@ Cluster2_clus9_ADT <- FindMarkers(Cluster2, ident.1 = 9, assay = "ADT")
 Cluster2_clus9_ADT <- Cluster2_clus9_ADT %>%
   filter(p_val_adj <= 0.05) %>%
   arrange(desc(avg_log2FC))
+Cluster2_clus9_ADT <- tibble::rownames_to_column(Cluster2_clus9_ADT, "Antibodies")
+write.csv(Cluster2_clus9_ADT, "Cluster2_clus9_ADT.csv")
 
 Cluster2_clus9_RNA <- FindMarkers(Cluster2, ident.1 = 9, assay = "RNA")
 Cluster2_clus9_RNA <- Cluster2_clus9_RNA %>%
   filter(p_val_adj <= 0.05) %>%
   arrange(desc(avg_log2FC))
+Cluster2_clus9_RNA <- tibble::rownames_to_column(Cluster2_clus9_RNA, "Genes")
+write.csv(Cluster2_clus9_RNA, "Cluster2_clus9_RNA.csv")
 
 ##Clonotype analysis of Cluster2##
 DimPlot(Cluster2, reduction = "wnn.umap", group.by = "CTstrict")
@@ -1239,7 +1248,7 @@ FeaturePlot(Cluster2, features = "Aicda", reduction = "wnn.umap", cols = mako(10
 FeaturePlot(Cluster2, features = "Cyp11a1", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE) #B220- B cells
 FeaturePlot(Cluster2, features = "Cd5", blend = TRUE, reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE) #B1a B cells
 FeaturePlot(Cluster2, features = "Spn", reduction = "wnn.umap", cols = mako(10), pt.size = 3, order = TRUE) #CD43+ B cells
-
+FeaturePlot(Cluster2, features = "Notch2", reduction = "wnn.umap", cols = mako(10), pt.size = 3, order = TRUE)
 
 
 VlnPlot(Cluster2, cols = col_con2, features = "Bcl6") +
@@ -1257,6 +1266,12 @@ VlnPlot(Cluster2, cols = col_con2, features = "Cd5") +
 VlnPlot(Cluster2, cols = col_con2, features = "Spn") +
   theme_bw() + xlab('Cluster 2 - Sub-Clusters')
 
+VlnPlot(Cluster2, cols = col_con2, features = "Notch2") +
+  theme_bw() + xlab('Cluster 2 - Sub-Clusters')
+
+VlnPlot(Bcell_clus, cols = col_con2, features = "Notch2") +
+  theme_bw() + xlab('Cluster 2 - Sub-Clusters')
+
 #ADT#
 DefaultAssay(Cluster2) <- "ADT"
 FeaturePlot(Cluster2, features = "Pd-L2", reduction = "wnn.umap", cols = magma(10), pt.size = 1.5, order = TRUE)
@@ -1268,11 +1283,177 @@ FeaturePlot(Cluster2, features = "B220", reduction = "wnn.umap", cols = magma(10
 FeaturePlot(Cluster2, features = c("Pd-L2", "Cd80"), blend = TRUE, reduction = "wnn.umap", pt.size = 1.5, order = TRUE)
 
 
+##Pathway Analysis##
+#Suerat: DEenrichRPlot function#
+install.packages('enrichR')
+library(enrichR)
+library(enrichplot)
+
+?DEenrichRPlot
+test <- DEenrichRPlot(All_cells, balanced = TRUE, ident.1 = "2", enrich.database = "TRRUST_Transcription_Factors_2019", max.genes = 200,
+                        p.value.cutoff = 0.05, return.gene.list = TRUE)
+
+test_1 <- test[[1]]
+colnames(test_1)
+
+p <- ggplot(test_1, aes(x= TRRUST_Transcription_Factors_2019.Combined.Score, y= TRRUST_Transcription_Factors_2019.Term, fill = log10pval)) +
+  geom_bar(stat="identity") + theme_bw() + geom_text(aes(label = TRRUST_Transcription_Factors_2019.Overlap), vjust = 0, hjust = -1)
+p
+
+
+testest <- DEenrichRPlot(Cluster2, balanced = TRUE, ident.1 = "2", enrich.database = "TRRUST_Transcription_Factors_2019", max.genes = 200,
+                      p.value.cutoff = 0.05, return.gene.list = TRUE)
+testest_1 <- testest[[1]]
+colnames(testest_1)
+
+p <- ggplot(testest_1, aes(x= TRRUST_Transcription_Factors_2019.Combined.Score, y= TRRUST_Transcription_Factors_2019.Term, fill = log10pval)) +
+  geom_bar(stat="identity") + theme_bw() + geom_text(aes(label = TRRUST_Transcription_Factors_2019.Overlap), vjust = 0, hjust = -1)
+p
+
+#ClusterProfiler#
+Cluster2_clus2_RNA <- FindMarkers(Cluster2, ident.1 = 2, assay = "RNA")
+Cluster2_clus2_RNA <- Cluster2_clus2_RNA %>%
+  filter(p_val_adj <= 0.05) %>%
+  arrange(desc(avg_log2FC))
+Cluster2_clus2_RNA <- tibble::rownames_to_column(Cluster2_clus2_RNA, "Genes")
+
+test2 <- Cluster2_clus2_RNA %>%
+  mutate(rank = rank(avg_log2FC,  ties.method = "random")) %>%
+  arrange(desc(rank))
+
+test2 <- test2$Genes
+
+test2 = bitr(test2, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
 
 
 
 
 
+
+library(clusterProfiler)
+library(org.Mm.eg.db)
+library(org.Hs.eg.db)
+
+data(geneList, package="DOSE")
+gene <- names(geneList)[abs(geneList) > 2]
+str(gene)
+
+gene.df <- bitr(gene, fromType = "ENTREZID",
+                toType = c("ENSEMBL", "SYMBOL"),
+                OrgDb = org.Hs.eg.db)
+
+
+ego <- gseGO(geneList     = test2$ENTREZID,
+              OrgDb        = org.Mm.eg.db,
+             keytType = 'SYMBOL',
+              ont          = "CC",
+              minGSSize    = 1,
+              maxGSSize    = 500,
+              pvalueCutoff = 0.05,
+              verbose      = FALSE)
+
+
+library(AnnotationHub)
+#All B cells#
+Bcell.markers <- FindAllMarkers(Bcell_clus, only.pos = TRUE, min.pct = 0.1, logfc.threshold = 0.25) #Find all markers across clusters
+Bcell.markers %>% group_by(cluster) %>% top_n(n = 2, wt = avg_log2FC)
+head(Bcell.markers)
+
+top_genes <- Bcell.markers %>% group_by(cluster) %>% top_n(n = 100, wt = avg_log2FC) #Select top100 markers for each cluster
+top_genes_pval <- subset(top_genes, rowSums(top_genes[5] < 0.05) > 0)
+head(top_genes_pval)
+
+dframe <- top_genes_pval[,7:6] #Select only genes and clusters
+dframe_sample <- split(dframe$gene,dframe$cluster) #make a list with each cluster being an individual list object
+str(dframe_sample)
+length(dframe_sample)
+
+dframe_sample$`0` = bitr(dframe_sample$`0`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db") #Transform all gene symbols to ENTREZIDs
+dframe_sample$`1` = bitr(dframe_sample$`1`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dframe_sample$`2` = bitr(dframe_sample$`2`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dframe_sample$`10` = bitr(dframe_sample$`10`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dframe_sample$`15` = bitr(dframe_sample$`15`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dframe_sample$`18` = bitr(dframe_sample$`18`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dframe_sample$`19` = bitr(dframe_sample$`19`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dframe_sample$`20` = bitr(dframe_sample$`20`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dframe_sample$`21` = bitr(dframe_sample$`21`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dframe_sample$`23` = bitr(dframe_sample$`23`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dframe_sample$`30` = bitr(dframe_sample$`30`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dframe_sample$`35` = bitr(dframe_sample$`35`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+
+gene_list <- list("0" = dframe_sample$`0`$ENTREZID, #Generate a list with ENTREZIDs for each cluster
+                 "1" = dframe_sample$`1`$ENTREZID,
+                 "2" = dframe_sample$`2`$ENTREZID,
+                 "10" = dframe_sample$`10`$ENTREZID,
+                 "15" = dframe_sample$`15`$ENTREZID,
+                 "18" = dframe_sample$`18`$ENTREZID,
+                 "19" = dframe_sample$`19`$ENTREZID,
+                 "20" = dframe_sample$`20`$ENTREZID,
+                 "21" = dframe_sample$`21`$ENTREZID,
+                 "23" = dframe_sample$`23`$ENTREZID,
+                 "30" = dframe_sample$`30`$ENTREZID,
+                 "35" = dframe_sample$`35`$ENTREZID
+)
+
+GO_clusterplot <- compareCluster(geneCluster = gene_list, fun = "enrichGO", OrgDb = "org.Mm.eg.db")
+dotplot(GO_clusterplot, font.size = 8, label_format = 100)
+
+KEGG_clusterplot <- compareCluster(geneCluster = gene_list, fun = "enrichKEGG", organism = "mmu")
+dotplot(KEGG_clusterplot, font.size = 8, label_format = 100)
+
+
+#Cluster2#
+cluster2.markers <- FindAllMarkers(Cluster2, only.pos = TRUE, min.pct = 0.1, logfc.threshold = 0.25) #Find all markers across clusters
+cluster2.markers %>% group_by(cluster) %>% top_n(n = 2, wt = avg_log2FC)
+head(cluster2.markers)
+
+top100 <- cluster2.markers %>% group_by(cluster) %>% top_n(n = 100, wt = avg_log2FC) #Select top100 markers for each cluster
+top100pval <- subset(top100, rowSums(top100[5] < 0.05) > 0)
+head(top100pval)
+
+df <- top100pval[,7:6] #Select only genes and clusters
+dfsample <- split(df$gene,df$cluster) #make a list with each cluster being an individual list object
+str(dfsample)
+length(dfsample)
+
+dfsample$`0` = bitr(dfsample$`0`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db") #Transform all gene symbols to ENTREZIDs
+dfsample$`1` = bitr(dfsample$`1`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dfsample$`2` = bitr(dfsample$`2`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dfsample$`3` = bitr(dfsample$`3`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dfsample$`4` = bitr(dfsample$`4`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dfsample$`5` = bitr(dfsample$`5`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dfsample$`6` = bitr(dfsample$`6`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dfsample$`7` = bitr(dfsample$`7`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dfsample$`8` = bitr(dfsample$`8`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dfsample$`9` = bitr(dfsample$`9`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dfsample$`10` = bitr(dfsample$`10`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dfsample$`11` = bitr(dfsample$`11`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dfsample$`12` = bitr(dfsample$`12`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dfsample$`13` = bitr(dfsample$`13`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+dfsample$`14` = bitr(dfsample$`14`, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
+
+genelist <- list("0" = dfsample$`0`$ENTREZID, #Generate a list with ENTREZIDs for each cluster
+                 "1" = dfsample$`1`$ENTREZID,
+                 "2" = dfsample$`2`$ENTREZID,
+                 "3" = dfsample$`3`$ENTREZID,
+                 "4" = dfsample$`4`$ENTREZID,
+                 "5" = dfsample$`5`$ENTREZID,
+                 "6" = dfsample$`6`$ENTREZID,
+                 "7" = dfsample$`7`$ENTREZID,
+                 "8" = dfsample$`8`$ENTREZID,
+                 "9" = dfsample$`9`$ENTREZID,
+                 "10" = dfsample$`10`$ENTREZID,
+                 "11" = dfsample$`11`$ENTREZID,
+                 "12" = dfsample$`12`$ENTREZID,
+                 "13" = dfsample$`13`$ENTREZID,
+                 "14" = dfsample$`14`$ENTREZID
+                 )
+
+GOclusterplot <- compareCluster(geneCluster = genelist, fun = "enrichGO", OrgDb = "org.Mm.eg.db")
+dotplot(GOclusterplot)
+
+KEGGclusterplot <- compareCluster(geneCluster = genelist, fun = "enrichKEGG", organism = "mmu")
+dotplot(KEGGclusterplot, font.size = 8, label_format = 100)
 
 ##use addmodule score to test for cell signature enrichment##
 
