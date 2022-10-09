@@ -25,6 +25,14 @@ library(infercnv)
 library(Polychrome)
 library(ggpubr)
 library(clustree)
+library(enrichR)
+library(enrichplot)
+library(clusterProfiler)
+library(org.Mm.eg.db)
+library(org.Hs.eg.db)
+library(AnnotationHub)
+
+
 
 
 ##Colour paneles##
@@ -717,6 +725,12 @@ Sample.WT.plot2 <- DimPlot(Sample.WT, label = FALSE ,reduction = "wnn.umap", pt.
 Sample.WT.plot2
 ggsave("Sample.WT.plot2.pdf", width = 30, height = 20, units = "cm")
 
+Sample.WT.plot3 <- DimPlot(Sample.WT, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, group.by = "cloneType")  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("WT B cell Clusters by Clonotype") +
+  theme(plot.title = element_text(size=16, face = "bold"))
+Sample.WT.plot3
+ggsave("Sample.WT.plot3.pdf", width = 30, height = 20, units = "cm")
+
 Sample.BCL6 <- subset(Bcell_clus, subset = Genotype == "BCL6")
 Sample.BCL6.plot1 <- DimPlot(Sample.BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
   theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("BCL6 B cell Clusters") +
@@ -729,6 +743,12 @@ Sample.BCL6.plot2 <- DimPlot(Sample.BCL6, label = FALSE ,reduction = "wnn.umap",
   scale_shape_manual(values=c(1, 2))
 Sample.BCL6.plot2
 ggsave("Sample.BCL6.plot2.pdf", width = 30, height = 20, units = "cm")
+
+Sample.BCL6.plot3 <- DimPlot(Sample.BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, group.by = "cloneType")  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("BCL6 B cell Clusters by Clonotype") +
+  theme(plot.title = element_text(size=16, face = "bold"))
+Sample.BCL6.plot3
+ggsave("Sample.BCL6.plot3.pdf", width = 30, height = 20, units = "cm")
 
 Sample.E1020K <- subset(Bcell_clus, subset = Genotype == "E1020K")
 Sample.E1020K.plot1 <- DimPlot(Sample.E1020K, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
@@ -744,6 +764,12 @@ Sample.E1020K.plot2 <- DimPlot(Sample.E1020K, label = FALSE ,reduction = "wnn.um
 Sample.E1020K.plot2
 ggsave("Sample.E1020K.plot2.pdf", width = 30, height = 20, units = "cm")
 
+Sample.E1020K.plot3 <- DimPlot(Sample.E1020K, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, group.by = "cloneType")  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K B cell Clusters by Clonotype") +
+  theme(plot.title = element_text(size=16, face = "bold"))
+Sample.E1020K.plot3
+ggsave("Sample.E1020K.plot3.pdf", width = 30, height = 20, units = "cm")
+
 Sample.E1020K_BCL6 <- subset(Bcell_clus, subset = Genotype == "E1020K_BCL6")
 Sample.E1020K_BCL6.plot1 <- DimPlot(Sample.E1020K_BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
   theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K_BCL6 B cell Clusters") +
@@ -752,10 +778,16 @@ Sample.E1020K_BCL6.plot1
 ggsave("Sample.E1020K_BCL6.plot1.pdf", width = 30, height = 20, units = "cm")
 
 Sample.E1020K_BCL6.plot2 <- DimPlot(Sample.E1020K_BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 3, cols = col_con2, shape.by = "Mouse")  +
-  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K_BCL6 B cell Clusters") +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K_BCL6 B cell Clusters by Mouse") +
   theme(plot.title = element_text(size=16, face = "bold")) +
   scale_shape_manual(values=c(1, 2))
 Sample.E1020K_BCL6.plot2
+ggsave("Sample.E1020K_BCL6.plot2.pdf", width = 30, height = 20, units = "cm")
+
+Sample.E1020K_BCL6.plot3 <- DimPlot(Sample.E1020K_BCL6, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, group.by = "cloneType")  +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("E1020K_BCL6 B cell Clusters by Clonotype") +
+  theme(plot.title = element_text(size=16, face = "bold"))
+Sample.E1020K_BCL6.plot3
 ggsave("Sample.E1020K_BCL6.plot2.pdf", width = 30, height = 20, units = "cm")
 
 ##B cell clusters by Sex##
@@ -1284,77 +1316,10 @@ FeaturePlot(Cluster2, features = c("Pd-L2", "Cd80"), blend = TRUE, reduction = "
 
 
 ##Pathway Analysis##
-#Suerat: DEenrichRPlot function#
-install.packages('enrichR')
-library(enrichR)
-library(enrichplot)
-
-?DEenrichRPlot
-test <- DEenrichRPlot(All_cells, balanced = TRUE, ident.1 = "2", enrich.database = "TRRUST_Transcription_Factors_2019", max.genes = 200,
-                        p.value.cutoff = 0.05, return.gene.list = TRUE)
-
-test_1 <- test[[1]]
-colnames(test_1)
-
-p <- ggplot(test_1, aes(x= TRRUST_Transcription_Factors_2019.Combined.Score, y= TRRUST_Transcription_Factors_2019.Term, fill = log10pval)) +
-  geom_bar(stat="identity") + theme_bw() + geom_text(aes(label = TRRUST_Transcription_Factors_2019.Overlap), vjust = 0, hjust = -1)
-p
 
 
-testest <- DEenrichRPlot(Cluster2, balanced = TRUE, ident.1 = "2", enrich.database = "TRRUST_Transcription_Factors_2019", max.genes = 200,
-                      p.value.cutoff = 0.05, return.gene.list = TRUE)
-testest_1 <- testest[[1]]
-colnames(testest_1)
-
-p <- ggplot(testest_1, aes(x= TRRUST_Transcription_Factors_2019.Combined.Score, y= TRRUST_Transcription_Factors_2019.Term, fill = log10pval)) +
-  geom_bar(stat="identity") + theme_bw() + geom_text(aes(label = TRRUST_Transcription_Factors_2019.Overlap), vjust = 0, hjust = -1)
-p
-
-#ClusterProfiler#
-Cluster2_clus2_RNA <- FindMarkers(Cluster2, ident.1 = 2, assay = "RNA")
-Cluster2_clus2_RNA <- Cluster2_clus2_RNA %>%
-  filter(p_val_adj <= 0.05) %>%
-  arrange(desc(avg_log2FC))
-Cluster2_clus2_RNA <- tibble::rownames_to_column(Cluster2_clus2_RNA, "Genes")
-
-test2 <- Cluster2_clus2_RNA %>%
-  mutate(rank = rank(avg_log2FC,  ties.method = "random")) %>%
-  arrange(desc(rank))
-
-test2 <- test2$Genes
-
-test2 = bitr(test2, fromType="SYMBOL", toType="ENTREZID", OrgDb="org.Mm.eg.db")
-
-
-
-
-
-
-library(clusterProfiler)
-library(org.Mm.eg.db)
-library(org.Hs.eg.db)
-
-data(geneList, package="DOSE")
-gene <- names(geneList)[abs(geneList) > 2]
-str(gene)
-
-gene.df <- bitr(gene, fromType = "ENTREZID",
-                toType = c("ENSEMBL", "SYMBOL"),
-                OrgDb = org.Hs.eg.db)
-
-
-ego <- gseGO(geneList     = test2$ENTREZID,
-              OrgDb        = org.Mm.eg.db,
-             keytType = 'SYMBOL',
-              ont          = "CC",
-              minGSSize    = 1,
-              maxGSSize    = 500,
-              pvalueCutoff = 0.05,
-              verbose      = FALSE)
-
-
-library(AnnotationHub)
 #All B cells#
+#ClusterProfiler
 Bcell.markers <- FindAllMarkers(Bcell_clus, only.pos = TRUE, min.pct = 0.1, logfc.threshold = 0.25) #Find all markers across clusters
 Bcell.markers %>% group_by(cluster) %>% top_n(n = 2, wt = avg_log2FC)
 head(Bcell.markers)
@@ -1400,6 +1365,29 @@ dotplot(GO_clusterplot, font.size = 8, label_format = 100)
 
 KEGG_clusterplot <- compareCluster(geneCluster = gene_list, fun = "enrichKEGG", organism = "mmu")
 dotplot(KEGG_clusterplot, font.size = 8, label_format = 100)
+
+#Seurat: DEenrichPlot function
+TFs <- DEenrichRPlot(Bcell_clus, balanced = TRUE, ident.1 = "2", enrich.database = "TRRUST_Transcription_Factors_2019", max.genes = 200,
+                      p.value.cutoff = 0.05, return.gene.list = TRUE)
+str(TFs)
+length(TFs)
+
+TFs_pos <- TFs[[1]]
+colnames(TFs_pos)
+
+TFs_neg <- TFs[[2]]
+colnames(TFs_neg)
+
+TFs_pos_plot <- ggplot(TFs_pos, aes(x= TRRUST_Transcription_Factors_2019.Combined.Score, y= TRRUST_Transcription_Factors_2019.Term, fill = log10pval)) +
+  geom_bar(stat="identity") + theme_bw() + geom_text(aes(label = TRRUST_Transcription_Factors_2019.Overlap), vjust = 0, hjust = -1)
+print(TFs_pos_plot)
+ggsave("Cl2_TFs_pos_plot.pdf", width = 30, height = 20, units = "cm")
+
+TFs_neg_plot <- ggplot(TFs_neg, aes(x= TRRUST_Transcription_Factors_2019.Combined.Score, y= TRRUST_Transcription_Factors_2019.Term, fill = log10pval)) +
+  geom_bar(stat="identity") + theme_bw() + geom_text(aes(label = TRRUST_Transcription_Factors_2019.Overlap), vjust = 0, hjust = -1)
+print(TFs_neg_plot)
+ggsave("Cl2_TFs_neg_plot.pdf", width = 30, height = 20, units = "cm")
+
 
 
 #Cluster2#
