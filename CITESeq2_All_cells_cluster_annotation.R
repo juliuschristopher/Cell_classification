@@ -65,7 +65,6 @@ print(UMAP1)
 ggsave("Original_cluster_1.pdf", width = 30, height = 20, units = "cm")
 
 ##Allocate Genotype, Mouse number and Sex##
-
 #Genotype#
 head(All_cells[[]])
 Idents(All_cells) <- All_cells$orig.ident
@@ -710,6 +709,13 @@ ggsave("Bcellsl_cluster_5.pdf", width = 30, height = 20, units = "cm")
 
 head(Bcell_clus[[]])
 
+##Look at B cell Ecotypes
+Bcell_Eco <- GetAssayData(Bcell_clus, slot = "scale.data")
+head(Bcell_Eco)
+write.csv(Bcell_Eco, "Bcell_Eco.csv")
+
+
+
 ##B cell clusters by Genotype##
 Sample.WT <- subset(Bcell_clus, subset = Genotype == "WT")
 Sample.WT.plot1 <- DimPlot(Sample.WT, label = FALSE ,reduction = "wnn.umap", pt.size = 1.2, label.size = 6, cols = col_con2)  +
@@ -1280,7 +1286,35 @@ FeaturePlot(Cluster2, features = "Aicda", reduction = "wnn.umap", cols = mako(10
 FeaturePlot(Cluster2, features = "Cyp11a1", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE) #B220- B cells
 FeaturePlot(Cluster2, features = "Cd5", blend = TRUE, reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE) #B1a B cells
 FeaturePlot(Cluster2, features = "Spn", reduction = "wnn.umap", cols = mako(10), pt.size = 3, order = TRUE) #CD43+ B cells
-FeaturePlot(Cluster2, features = "Notch2", reduction = "wnn.umap", cols = mako(10), pt.size = 3, order = TRUE)
+FeaturePlot(Cluster2, features = "Pdcd1lg2", reduction = "wnn.umap", cols = mako(10), pt.size = 2.5, order = TRUE)
+
+#Ecotypoer - Cluster2#
+head(Cluster2[[]])
+Cluster2_Eco <- GetAssayData(Cluster2, slot = "scale.data")
+test <- as.data.frame(t(Cluster2_Eco))
+test <- tibble::rownames_to_column(test, "Cells")
+
+Cluster2_Eco_meta <- as.data.frame(Cluster2$Cluster2_SubClusters)
+names(Cluster2_Eco_meta)[names(Cluster2_Eco_meta) == 'Cluster2$Cluster2_SubClusters'] <- 'Subcluster'
+test2 <- tibble::rownames_to_column(Cluster2_Eco_meta, "Cells")
+
+test3 <- merge(test, test2, by = "Cells")
+rownames(test3) <- test3$Cells
+
+drop <- "Cells"
+test3 <- test3[ , !(names(test3) %in% drop)]
+test3$Subcluster
+
+test3 <- test3 %>%
+  select("Subcluster", everything())
+
+test3 <- t(test3)
+write.csv(test3, "test3.csv")
+
+
+  
+
+
 
 
 VlnPlot(Cluster2, cols = col_con2, features = "Bcl6") +
@@ -1301,7 +1335,7 @@ VlnPlot(Cluster2, cols = col_con2, features = "Spn") +
 VlnPlot(Cluster2, cols = col_con2, features = "Notch2") +
   theme_bw() + xlab('Cluster 2 - Sub-Clusters')
 
-VlnPlot(Bcell_clus, cols = col_con2, features = "Notch2") +
+VlnPlot(Bcell_clus, cols = col_con2, features = "Pdcd1lg2") +
   theme_bw() + xlab('Cluster 2 - Sub-Clusters')
 
 #ADT#
@@ -1443,7 +1477,197 @@ dotplot(GOclusterplot)
 KEGGclusterplot <- compareCluster(geneCluster = genelist, fun = "enrichKEGG", organism = "mmu")
 dotplot(KEGGclusterplot, font.size = 8, label_format = 100)
 
-##use addmodule score to test for cell signature enrichment##
+##Addmodule score to test for cell signature enrichment##
+Malignant_Signatures_data <- read.csv(file.choose("Malignant_Bcell_Signatures.csv"),header = T, sep = ',')
+head(Malignant_Signatures_data)
+str(Malignant_Signatures_data)
+
+##Convert cell marker df into a list##
+marker_list <- list() #Create an empty list
+
+for(i in 1:ncol(Malignant_Signatures_data)) {
+  marker_list[[i]] <- Malignant_Signatures_data[ , i]
+} # Using for-loop to add columns to list
+
+names(marker_list) <- colnames(Malignant_Signatures_data) #Add colnames to list elements
+
+marker_list <- lapply(marker_list, str_to_title) #Capitalise gene symbols
+
+head(marker_list) #Print marker_list
+names(marker_list)
+
+##Run addmodule score##
+setwd("/Volumes/GoogleDrive/Shared drives/Okkengroup/Experiments/Julius/Experiments/CITE-Sequencing/CITE-Seq (2)/Overall_analysis/CITE-Seq2_all_cells/Malignant_Bcell_Signautres")
+
+#Malignant B cell signatures - all B cells##
+DefaultAssay(Bcell_clus) <- "RNA"
+
+#S1
+Bcell_clus <- AddModuleScore(Bcell_clus, features = marker_list[1], name = "S1", search = FALSE)
+S1_plot1 <- VlnPlot(Bcell_clus, features = "S11" , pt.size  = 0.5, cols = col_con2) +
+  theme_bw() + xlab("B cell Popualtions") + ggtitle("S1 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  NoLegend()
+print(S1_plot1)
+ggsave("S1_plot1.pdf", width = 30, height = 20, units = "cm")
+
+S1_plot2 <- FeaturePlot(Bcell_clus, features = "S11", cols=viridis(10), reduction = "wnn.umap",pt.size  = 1.5, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("S1 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(S1_plot2)
+ggsave("S1_plot2.pdf", width = 30, height = 20, units = "cm")
+
+#S2
+Bcell_clus <- AddModuleScore(Bcell_clus, features = marker_list[2], name = "S2", search = FALSE)
+S2_plot1 <- VlnPlot(Bcell_clus, features = "S21" , pt.size  = 0.5, cols = col_con2) +
+  theme_bw() + xlab("B cell Popualtions") + ggtitle("S2 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  NoLegend()
+print(S2_plot1)
+ggsave("S2_plot1.pdf", width = 30, height = 20, units = "cm")
+
+S2_plot2 <- FeaturePlot(Bcell_clus, features = "S21", cols=viridis(10), reduction = "wnn.umap",pt.size  = 1.5, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("S2 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(S2_plot2)
+ggsave("S2_plot2.pdf", width = 30, height = 20, units = "cm")
+
+#S3
+Bcell_clus <- AddModuleScore(Bcell_clus, features = marker_list[3], name = "S3", search = FALSE)
+S3_plot1 <- VlnPlot(Bcell_clus, features = "S31" , pt.size  = 0.5, cols = col_con2) +
+  theme_bw() + xlab("B cell Popualtions") + ggtitle("S3 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  NoLegend()
+print(S3_plot1)
+ggsave("S3_plot1.pdf", width = 30, height = 20, units = "cm")
+
+S3_plot2 <- FeaturePlot(Bcell_clus, features = "S31", cols=viridis(10), reduction = "wnn.umap",pt.size  = 1.5, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("S3 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(S3_plot2)
+ggsave("S3_plot2.pdf", width = 30, height = 20, units = "cm")
+
+#S4
+Bcell_clus <- AddModuleScore(Bcell_clus, features = marker_list[4], name = "S4", search = FALSE)
+S4_plot1 <- VlnPlot(Bcell_clus, features = "S41" , pt.size  = 0.5, cols = col_con2) +
+  theme_bw() + xlab("B cell Popualtions") + ggtitle("S4 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  NoLegend()
+print(S4_plot1)
+ggsave("S4_plot1.pdf", width = 30, height = 20, units = "cm")
+
+S4_plot2 <- FeaturePlot(Bcell_clus, features = "S41", cols=viridis(10), reduction = "wnn.umap",pt.size  = 1.5, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("S4 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(S4_plot2)
+ggsave("S4_plot2.pdf", width = 30, height = 20, units = "cm")
+
+#S5
+Bcell_clus <- AddModuleScore(Bcell_clus, features = marker_list[5], name = "S5", search = FALSE)
+S5_plot1 <- VlnPlot(Bcell_clus, features = "S51" , pt.size  = 0.5, cols = col_con2) +
+  theme_bw() + xlab("B cell Popualtions") + ggtitle("S5 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  NoLegend()
+print(S5_plot1)
+ggsave("S5_plot1.pdf", width = 30, height = 20, units = "cm")
+
+S5_plot2 <- FeaturePlot(Bcell_clus, features = "S51", cols=viridis(10), reduction = "wnn.umap",pt.size  = 1.5, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("S5 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(S5_plot2)
+ggsave("S5_plot2.pdf", width = 30, height = 20, units = "cm")
+
+#Malignant B cell signatures - Cluster 2##
+DefaultAssay(Cluster2) <- "RNA"
+
+DimPlot(Cluster2, reduction = "wnn.umap")
+
+#S1
+Cluster2 <- AddModuleScore(Cluster2, features = marker_list[1], name = "S1", search = FALSE)
+S1_plot3 <- VlnPlot(Cluster2, features = "S11" , pt.size  = 0.5, cols = col_con2) +
+  theme_bw() + xlab("Cluster2 Subpopulations") + ggtitle("S1 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  NoLegend()
+print(S1_plot3)
+ggsave("S1_plot3.pdf", width = 30, height = 20, units = "cm")
+
+S1_plot4 <- FeaturePlot(Cluster2, features = "S11", cols=viridis(10), reduction = "wnn.umap",pt.size  = 2, order = TRUE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("S1 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(S1_plot4)
+ggsave("S1_plot4.pdf", width = 30, height = 20, units = "cm")
+
+#S2
+Cluster2 <- AddModuleScore(Cluster2, features = marker_list[2], name = "S2", search = FALSE)
+S2_plot3 <- VlnPlot(Cluster2, features = "S21" , pt.size  = 0.5, cols = col_con2) +
+  theme_bw() + xlab("Cluster2 Subpopulations") + ggtitle("S2 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  NoLegend()
+print(S2_plot3)
+ggsave("S2_plot3.pdf", width = 30, height = 20, units = "cm")
+
+S2_plot4 <- FeaturePlot(Cluster2, features = "S21", cols=viridis(10), reduction = "wnn.umap",pt.size  = 1.5, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("S2 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(S2_plot4)
+ggsave("S2_plot4.pdf", width = 30, height = 20, units = "cm")
+
+#S3
+Cluster2 <- AddModuleScore(Cluster2, features = marker_list[3], name = "S3", search = FALSE)
+S3_plot3 <- VlnPlot(Cluster2, features = "S31" , pt.size  = 0.5, cols = col_con2) +
+  theme_bw() + xlab("B cell Popualtions") + ggtitle("S3 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  NoLegend()
+print(S3_plot3)
+ggsave("S3_plot3.pdf", width = 30, height = 20, units = "cm")
+
+S3_plot4 <- FeaturePlot(Cluster2, features = "S31", cols=viridis(10), reduction = "wnn.umap",pt.size  = 1.5, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("S3 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(S3_plot4)
+ggsave("S3_plot4.pdf", width = 30, height = 20, units = "cm")
+
+#S4
+Cluster2 <- AddModuleScore(Cluster2, features = marker_list[4], name = "S4", search = FALSE)
+S4_plot3 <- VlnPlot(Cluster2, features = "S41" , pt.size  = 0.5, cols = col_con2) +
+  theme_bw() + xlab("B cell Popualtions") + ggtitle("S4 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  NoLegend()
+print(S4_plot3)
+ggsave("S4_plot3.pdf", width = 30, height = 20, units = "cm")
+
+S4_plot4 <- FeaturePlot(Cluster2, features = "S41", cols=viridis(10), reduction = "wnn.umap",pt.size  = 1.5, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("S4 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(S4_plot4)
+ggsave("S4_plot4.pdf", width = 30, height = 20, units = "cm")
+
+#S5
+Cluster2 <- AddModuleScore(Cluster2, features = marker_list[5], name = "S5", search = FALSE)
+S5_plot3 <- VlnPlot(Cluster2, features = "S51" , pt.size  = 0.5, cols = col_con2) +
+  theme_bw() + xlab("B cell Popualtions") + ggtitle("S5 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold")) +
+  theme(axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) +
+  NoLegend()
+print(S5_plot3)
+ggsave("S5_plot3.pdf", width = 30, height = 20, units = "cm")
+
+S5_plot4 <- FeaturePlot(Cluster2, features = "S51", cols=viridis(10), reduction = "wnn.umap",pt.size  = 1.5, order = FALSE) +
+  theme_bw() + xlab("UMAP1") + ylab("UMAP2") + ggtitle("S5 Malignant B cell State") +
+  theme(plot.title = element_text(color="black", size=16, face="bold"))
+print(S5_plot4)
+ggsave("S5_plot4.pdf", width = 30, height = 20, units = "cm")
+
+
 
 
 ##Use scGate to gate out popualtions##
