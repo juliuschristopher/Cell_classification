@@ -1286,31 +1286,7 @@ FeaturePlot(Cluster2, features = "Aicda", reduction = "wnn.umap", cols = mako(10
 FeaturePlot(Cluster2, features = "Cyp11a1", reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE) #B220- B cells
 FeaturePlot(Cluster2, features = "Cd5", blend = TRUE, reduction = "wnn.umap", cols = mako(10), pt.size = 1.5, order = TRUE) #B1a B cells
 FeaturePlot(Cluster2, features = "Spn", reduction = "wnn.umap", cols = mako(10), pt.size = 3, order = TRUE) #CD43+ B cells
-FeaturePlot(Cluster2, features = "Pdcd1lg2", reduction = "wnn.umap", cols = mako(10), pt.size = 2.5, order = TRUE)
-
-#Ecotypoer - Cluster2#
-head(Cluster2[[]])
-Cluster2_Eco <- GetAssayData(Cluster2, slot = "scale.data")
-test <- as.data.frame(t(Cluster2_Eco))
-test <- tibble::rownames_to_column(test, "Cells")
-
-Cluster2_Eco_meta <- as.data.frame(Cluster2$Cluster2_SubClusters)
-names(Cluster2_Eco_meta)[names(Cluster2_Eco_meta) == 'Cluster2$Cluster2_SubClusters'] <- 'Subcluster'
-test2 <- tibble::rownames_to_column(Cluster2_Eco_meta, "Cells")
-
-test3 <- merge(test, test2, by = "Cells")
-rownames(test3) <- test3$Cells
-
-drop <- "Cells"
-test3 <- test3[ , !(names(test3) %in% drop)]
-test3$Subcluster
-
-test3 <- test3 %>%
-  select("Subcluster", everything())
-
-test3 <- t(test3)
-write.csv(test3, "test3.csv")
-
+FeaturePlot(Cluster2, features = "Pik3r1", reduction = "wnn.umap", cols = mako(10), pt.size = 2.5, order = TRUE)
 
   
 
@@ -1335,7 +1311,7 @@ VlnPlot(Cluster2, cols = col_con2, features = "Spn") +
 VlnPlot(Cluster2, cols = col_con2, features = "Notch2") +
   theme_bw() + xlab('Cluster 2 - Sub-Clusters')
 
-VlnPlot(Bcell_clus, cols = col_con2, features = "Pdcd1lg2") +
+VlnPlot(Cluster2, cols = col_con2, features = "Pik3r1") +
   theme_bw() + xlab('Cluster 2 - Sub-Clusters')
 
 #ADT#
